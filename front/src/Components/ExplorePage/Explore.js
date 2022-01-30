@@ -5,7 +5,7 @@ const Explore = () => {
     return (
         <>
 
-        <p>hello</p>
+        <p>hell</p>
         </>
     )
 }
