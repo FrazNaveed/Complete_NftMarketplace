@@ -3,9 +3,7 @@ import "./explore.css"
 
 const Explore = () => {
     return (
-        <>
-
-        <p>hell</p>
+        <> 
         </>
     )
 }

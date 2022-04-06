@@ -1,6 +1,6 @@
 var Web3 = require("web3");
 var NFTaddress = "0xc4bA070d91D10877c0bE4265aF8692f1707729d7";
-var NFTabi = "../abi/ERC721abi.json";
+var NFTabi = "../abi/ERC721abi.json"; // require
 
 
 const NFT_CONTRACT = new web3.eth.Contract(NFTabi, NFTaddress);
