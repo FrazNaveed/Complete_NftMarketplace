@@ -1,8 +1,12 @@
 // import Front from './Components/FrontPage/Front';
-//import Explore from './Components/ExplorePage/Explore';
 import Navbar from "./Components/Navbar/Navbar";
+import Explore from './Components/ExplorePage/Explore';
+import Popular from "./Components/Popular/Popular";
+import Collection from "./Components/MyCollection/Collection";
+import Sale from "./Components/Sale/Sale";
+import Creators from "./Components/Creators/Creators";
+import ErrorPage from "./Components/ErrorPage/Error";
 // import Card from "./Components/populatecard/populateCard";
-
 
 
 
@@ -19,7 +23,7 @@ function App() {
     <div>
       
      
-    <Navbar/>
+   
     {/* <About/>
     <Contact/> */}
 
@@ -29,13 +33,18 @@ function App() {
     <Card/> */}
 
 
-{/* 
+<Navbar/>
+
     <Routes>
-        <Route exact path="/" element={<Main/>}  />
-        <Route exact path="/about" element={<About/>}  />
-        <Route path="/contact" element={<Contact/>}  />
-        {/* <Route element={<Error/>}/> 
-    </Routes> */}
+
+        {/* <Route exact path="/" element={<Main/>}  /> */}
+        <Route exact path="/explore" element={<Explore/>}  />
+        <Route exact path="/popular" element={<Popular/>}  />
+        <Route exact path="/collection" element={<Collection/>}  />
+        <Route exact path="/sale" element={<Sale/>}  />
+        <Route exact path="/creators" element={<Creators/>}  />
+        <Route element={<ErrorPage/>}/> 
+    </Routes>
 
 
    

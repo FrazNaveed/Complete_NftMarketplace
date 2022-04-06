@@ -11,14 +11,12 @@ const Navbar = () => {
               <span>N</span>FT
               <span> M</span>ARKETPLACE
             </h2>
-          </div>
 
-            <div className='links'>
-              <Link to="">  About Us   </Link>
-              <Link to=""> Contact Us  </Link>
-            </div>
-
-          <div className='buttons'>
+            <Link to="/explore">  Explore  </Link>
+              <Link to="/popular"> Popular  </Link>
+              <Link to="/sale"> Sale  </Link>
+              <Link to="/collection"> My Collection  </Link>
+              <Link to="/creators"> Creators  </Link>
 
           </div>
 

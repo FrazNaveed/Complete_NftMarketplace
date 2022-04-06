@@ -3,7 +3,8 @@ import "./explore.css"
 
 const Explore = () => {
     return (
-        <> 
+        <>
+        <p>Explore</p> 
         </>
     )
 }
