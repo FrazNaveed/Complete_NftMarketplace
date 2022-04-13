@@ -35,21 +35,31 @@ li> a{
     padding: 0px 20px;  
 }
 
+
 .buttons button{
-        
-    margin: 5px;
+    
+    position: relative;
+    border: 4px solid transparent;
+    border-radius: 10px;
+    background: black;
+    background-clip: padding-box;
     width: 110px;
     height: 45px;
-    border-radius: 12px;
+    color: white;
     font-size: 14px;
-    border-width: 2px;
-    border-image: linear-gradient(180deg, rgb(207, 84, 27), rgb(60, 154, 218)) 1;
-    background-color: black; 
-    color: white;   
+    font-weight: bold;
 
-    }
+}
 
-/* //linear-gradient(to right, #833ab4, #fd1d1d, #fcb845) */
+.buttons button::after {
+    position: absolute;
+    top: -2px; bottom: -2px;
+    left: -2px; right: -2px;
+    background: linear-gradient(#D9381E, rgb(46, 118, 226));
+    content: '';
+    z-index: -1;
+    border-radius: 10px;
+}
 
 .buttons button span {
     cursor: pointer;
