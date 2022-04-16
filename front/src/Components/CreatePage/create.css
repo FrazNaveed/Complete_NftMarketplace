@@ -1,34 +1,57 @@
 
 .container{
     display: flex;
-    flex-direction: row;
-    justify-content: center ;
-    border: 1px solid white;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 80px;
 }
 
 form{
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    border:3px solid pink;
+    margin: 1px;
 }
 
-.imageSection{
-    display: flex;
-    border: 1px solid red;
-   justify-content: center;
-   margin: 20px;
-   padding: 120px;
-   width: 50%;
-
+h1{
+    margin-bottom: 20px;
 }
 
-.inputSection{
-    border: 1px solid yellow;
-    margin: 20px;
-    display: flex;
-    flex-direction: column;
-    width: 50%;
-   
+input{
+    margin: 10px;
+    border: 1px solid rgb(46, 118, 226);
+    background-color: black;
+    color: rgb(255, 255, 255,.5);
+    height: 40px;
+    width: 300px;
+    font-size: 14pt;
+    border-radius: 12px;
+    outline: none;
+    padding: 12px;
+}
+
+textarea{
+    margin: 10px;
+    border: 1px solid rgb(46, 118, 226);
+    background-color: black;
+    color: rgb(255, 255, 255,.5);
+    height: 150px;
+    width: 300px;
+    font-size: 14pt;
+    border-radius: 12px;
+    outline: none;
+    padding: 12px;
+}
+
+button{
+
+    border: 1px solid rgb(46, 118, 226);
+    border-radius: 16px;
+    background: black;
+    width: 310px;
+    height: 50px;
+    color: rgb(255, 255, 255);
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
 }
