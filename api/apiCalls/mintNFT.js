@@ -1,18 +1,18 @@
-var Web3 = require("web3");
-var NFTaddress = "0xc4bA070d91D10877c0bE4265aF8692f1707729d7";
-var NFTabi = "../abi/ERC721abi.json"; // require
+var Web3 = require("Web3");
+const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+var contractAddress = "0x25873A135EcFaeCdb4Da5ecB87547FEaD67a9DCf";
+var contractAbi = require("../abi/ERC721abi.json");
 
 
-const NFT_CONTRACT = new web3.eth.Contract(NFTabi, NFTaddress);
+const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
 var fs = require("fs");
 const pinataSDK = require("@pinata/sdk");
 
-
 const pinata = pinataSDK(
     "17f1fd332091faac8827",
     "885c8fcaef1b1bbd6455c2fe35bd8e0a57876273b15cbdece015d7cf96bc5f04"
-);
+);   // confirm it
 
 
 let mintNFT = (req, res)=>{
@@ -39,7 +39,6 @@ let mintNFT = (req, res)=>{
         res.status(500).json({ error: "file conflict occured at server end" });
         return;
     }
-
     const readableStreamForFile = fs.createReadStream(mediaPath);
     const options = {
         pinataMetadata: {
@@ -55,6 +54,7 @@ let mintNFT = (req, res)=>{
     pinata
     .pinFileToIPFS(readableStreamForFile, options)
     .then((result) => {
+        // res.json({message: "Uploading to IPFS"});
         imgHash = "https://gateway.pinata.cloud/ipfs/" + result.IpfsHash;
         fs.unlinkSync(mediaPath);
  
@@ -108,13 +108,13 @@ let mintNFT = (req, res)=>{
                                     return;
                                 }
                                 const txObject = {
-                                    to: NFT_ADDRESS,
+                                    to: contractAddress,
                                     nonce: web3.utils.toHex(txCount),
                                     gasLimit: web3.utils.toHex(1000000),
                                     gasPrice: web3.utils.toHex(
                                         web3.utils.toWei("10", "gwei")
                                     ),
-                                    data: NFT_CONTRACT.methods
+                                    data: contract.methods
                                         .mint(
                                             to,
                                             metadataHash,
