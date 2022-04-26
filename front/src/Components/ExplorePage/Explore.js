@@ -1,36 +1,28 @@
 import React from "react";
 import "./explore.css";
-// import Card from "../populatecard/populateCard";
+import video from "../.././Assets/sample.mp4";
 import { Link } from "react-router-dom";
+import { pink } from "@material-ui/core/colors";
+import { fontWeight } from "@mui/system";
 const Explore = () => {
   return (
     <>
-      <p>Explore</p>
-      <div className="card">
-        <Link to="/details">
-          <div className="card-image"> </div>
-          <div className="card-text">
-            <span className="date">4 days ago</span>
-            <h4>Hello</h4>
-          </div>
-          <div className="card-stats">
-            <div className="stats">
-              <div className="value">
-                4<sup>m</sup>
-              </div>
-              <div className="type">reads</div>
-            </div>
 
-            <div className="stats border">
-              <div className="value">5148</div>
-              <div className="type">view</div>
-            </div>
+{/* 
+</Link> */}
+      <ul> <li><h1>Explore</h1></li></ul>
 
-            <div className="stats">
-              <div className="value">32</div>
-              <div className="type">comments</div>
-            </div>
-          </div>
+      <div className="card"> 
+      <video src={video} />   
+      <Link to="/details">
+         
+         <div className="cardDetails">
+         <img src="https://picsum.photos/50/50" />
+          <h4>Tenz</h4>
+          <p>Price: <span style={{color: "orangered" , fontWeight: "bold"}}>20 Tokens</span></p>
+         </div>
+        <p> lorem ipsum dolor sit amet, lorem ipsum dolor sit amet, lorem ipsum
+        </p>
         </Link>
       </div>
     </>

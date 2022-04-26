@@ -13,6 +13,18 @@ form{
     margin: 1px;
 }
 
+.dropzone{
+
+    border: 2px dashed #D9381E;
+    height: 40%;
+    padding: 50px;
+    width: 95%;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 h1{
     margin-bottom: 20px;
 }
