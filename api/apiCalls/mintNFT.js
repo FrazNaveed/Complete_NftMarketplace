@@ -12,15 +12,14 @@ const pinataSDK = require("@pinata/sdk");
 const pinata = pinataSDK(
     "17f1fd332091faac8827",
     "885c8fcaef1b1bbd6455c2fe35bd8e0a57876273b15cbdece015d7cf96bc5f04"
-);   // confirm it
+); 
 
 
 let mintNFT = (req, res)=>{
-
+    console.log(req.body);
     var msgsender = req.body.msgsender || "";
     var title = req.body.title || "";
     var price = req.body.price || "";
-    var category = req.body.category || "";
     var description = req.body.description || "";
     var mediaPath = req.file.path;
 
@@ -28,7 +27,7 @@ let mintNFT = (req, res)=>{
     var metadataHash = "";
     var to = msgsender;
 
-    if ([msgsender, title, price, description, category].includes("")) {
+    if ([msgsender, title, price, description].includes("")) {
         res.status(404).json({
             error: "one of the required fields were left empty",
         });
@@ -62,7 +61,6 @@ let mintNFT = (req, res)=>{
             creator: msgsender,
             title: title,
             media: imgHash,
-            category: category,
             description: description,
         };
 

@@ -1,8 +1,25 @@
 import React from "react";
 import "./details.css";
 import video from "../.././Assets/sample.mp4";
+import axios from "axios";
 
 const Details = () => {
+
+
+  // useEffect(async()=>{
+
+  //   const uri = await axios.get(
+  //      `http://localhost:3000/mintNFT/getTokenURI`,
+  //     {
+  //         params: { tokenId: id },
+  //     }
+  // );
+
+  // })
+
+
+
+
   return (
     <div className="container">
       <div className="vidSection">

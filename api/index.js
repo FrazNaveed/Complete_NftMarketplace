@@ -33,9 +33,23 @@ const userStorage = multer.diskStorage({
 
 const Userupload = multer({ storage: userStorage });
 
+//********* ERC20 Calls *********\\
+app.get("/tokenBalanceOf", require("./apiCalls/tokenBalanceOf"));
+
+//*******  ERC721 Calls *******/
+app.get("/ownerOf", require("./apiCalls/ownerOf"));
 app.get("/getTokenPrice", require("./apiCalls/getTokenPrice"));
 app.post("/buyNFT", require("./apiCalls/buyNFT"));
 app.post("/mintNFT", upload.single("media"), require("./apiCalls/mintNFT"));
+app.get("/getTokenURI", require("./apiCalls/getTokenURI"));
+
+//********* Auction Calls *********\\
+app.post("/startAuction", require("./apiCalls/startAuction"));
+app.get("/auctionInfo", require("./apiCalls/auctionInfo"));
+app.post("/updateAuctionPrice", require("./apiCalls/updateAuctionPrice"));
+// app.post("/stopAuction", require("./apiCalls/stopAuction"));
+// app.get("/getAllAuctions", require("./apiCalls/getAllAuctions"));
+
 
 app.listen(port, () => {
     console.log(`Live at http://localhost:${port}`);

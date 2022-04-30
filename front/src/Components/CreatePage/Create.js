@@ -102,6 +102,7 @@ const Create = () => {
 
   return (
     <div className="container">
+      <div className="background">
       <h1>Create an NFT</h1>
       <form>
         <Dropzone
@@ -126,11 +127,12 @@ const Create = () => {
         <input type={Text} placeholder="Title" onChange={(e)=>{setTitle(e.target.value)}}/>
         <input type={Text} placeholder="Price" onChange={(e)=>{setPrice(e.target.value)}} />
         <textarea placeholder="Description" onChange={(e)=>{setDexcription(e.target.value)}}></textarea>
-        <button onClick={mintNFT}>Mint</button>
+        <button className="mintBtn" onClick={mintNFT}>Mint</button>
       </form>
 
-      <p>{mintMessage}</p>
+      <a>{mintMessage}</a>
       {/* <p>{mintMessageState}</p> */}
+      </div>
     </div>
   );
 };

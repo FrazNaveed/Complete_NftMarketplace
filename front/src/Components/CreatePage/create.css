@@ -7,6 +7,17 @@
     padding: 80px;
 }
 
+.background{
+    background-color: rgb(15, 15, 15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 500px;
+    height: 600px;
+    border-radius: 20px;
+}
+
 form{
     display: flex;
     flex-direction: column;
@@ -55,7 +66,7 @@ textarea{
     padding: 12px;
 }
 
-button{
+.mintBtn{
 
     border: 1px solid rgb(46, 118, 226);
     border-radius: 16px;
@@ -66,4 +77,8 @@ button{
     font-size: 25px;
     font-weight: bold;
     cursor: pointer;
+}
+.mintBtn:hover{
+    background-color: #D9381E;
+    border: #D9381E;
 }
