@@ -1,14 +1,33 @@
 
 
+#containerStyle{
+  
+  display: flex;
+  flex-direction: row;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  padding: 80px;
+
+}
 
 
 .card{
   display: flex;
-  border: 1px solid white;
   width: 270px;
   height: 400px;
-  border-radius: 12px;
   flex-direction: column;
+  background-image: linear-gradient(  rgb(46, 118, 226, 0.6), transparent);
+  border: 0.1px solid orangered;
+  border-radius: 12px;
+}
+
+
+
+.vid{
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
 }
 
 img{
@@ -18,7 +37,6 @@ img{
     width: 50px;
     height: 50px;     
 }
-
 
 a{
   text-decoration: none;
