@@ -1,14 +1,22 @@
 import React from "react";
 import "./explore.css";
-import video from "../.././Assets/sample.mp4";
 import { Link } from "react-router-dom";
-import { pink } from "@material-ui/core/colors";
-import { fontWeight } from "@mui/system";
+import { useState } from "react";
 
 
 const Explore = () => {
 
   let arr = [1,2,4,5,6,5,6,7,8, 7,8];
+
+  // const [showModal, setShowModal] = useState(false);
+  // const [modalId,setModalId]=useState(null);
+
+  // const setModal=(id)=>{
+  //   console.log("modal",showModal);
+  //   console.log('ids ',id);
+  //   setModalId(id);
+  //   setShowModal(true); 
+  // }
 
   return (
     <>
@@ -16,12 +24,13 @@ const Explore = () => {
 
      <div id="containerStyle" >
      {
-        arr.map(()=>{
+        arr.map((value)=>{
           return(
             <div className="card"> 
-            <video src="https://gateway.pinata.cloud/ipfs/QmTv2Tx9XQeLrvg8rs9LCCih6FrHt2mXs3LVBt23ZD7eE7" className="vid" />   
+             <Link to="/details">
+            <video src="https://gateway.pinata.cloud/ipfs/QmTv2Tx9XQeLrvg8rs9LCCih6FrHt2mXs3LVBt23ZD7eE7" className="vid" style={{width: "268px"}} />   
     
-            {/* <Link to="/details"> */}
+           
                
                <div className="cardDetails">
                <img src="https://picsum.photos/50/50" />
@@ -30,7 +39,7 @@ const Explore = () => {
                </div>
               <p> lorem ipsum dolor sit amet, lorem ipsum dolor sit amet, lorem ipsum
               </p>
-              {/* </Link> */}
+              </Link>
             </div>
           );
         })

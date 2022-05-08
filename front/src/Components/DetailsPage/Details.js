@@ -3,8 +3,10 @@ import "./details.css";
 import video from "../.././Assets/sample.mp4";
 import axios from "axios";
 
-const Details = () => {
+const Details = (props) => {
 
+  // console.log('modal render');
+  // console.log(props.modalId);
 
   // useEffect(async()=>{
 
@@ -22,6 +24,9 @@ const Details = () => {
 
   return (
     <div className="container">
+            {/* <button onClick={()=>props.setShowModal(false)}>
+        X
+      </button> */}
       <div className="vidSection">
         <video className="video" src={video} autoPlay muted loop />
       </div>
@@ -61,7 +66,7 @@ const Details = () => {
       </div>
 
       <div className="header">
-        <h2>Item History</h2>
+        <h2>Item History:</h2>
       </div>
 
       <div className="historySection">

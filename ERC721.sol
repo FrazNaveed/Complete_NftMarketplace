@@ -738,28 +738,89 @@ library Counters {
     }
 }
 
-contract BASYC_NFT is ERC721URIStorage {
+contract TokensNFT is ERC721URIStorage {
     using Counters for Counters.Counter;
     
     IERC20 public _tokenAddress;
+    address public auctionAddress;
     address public owner;
-    mapping(address => uint256[]) collections;              // NFTs of a user
-    mapping(uint256 => address) private NFTOwner;           // original owner who minted the NFT
-    mapping(uint256 => uint256) private prices;             // price of NFT 
-    uint256[] mintedIdsArray;                               // All ids that has been minted
-    Counters.Counter private _tokenIdCounter;               // Counter for NFTs
+    mapping(address => uint256[]) collections;              
+    mapping(uint256 => uint256) private prices; 
+    mapping(uint256 => bool) private onAuction;           
+    uint256[] mintedIdsArray;                              
+    Counters.Counter private _tokenIdCounter;      
 
     constructor(IERC20 tokenAddress)
-        ERC721("BASYC_NFT", "BSYC")
+        ERC721("Tokens NFT", "TKNS")
     {
         owner = msg.sender;
         _tokenAddress = tokenAddress;
         _tokenIdCounter.increment();
     }
 
-    modifier onlyOwner() {
+    modifier onlyOwner{
         require(msg.sender == owner, "Access forbidden");
         _;
+    }
+
+    modifier onlyAuctionContract{
+        require(msg.sender == auctionAddress, "Only Auction Address can do this");
+        _;
+    }
+
+    function setAuctionAddress(
+        address _auctionAddress
+    )external onlyOwner{
+        auctionAddress = _auctionAddress;
+    }
+
+    function findIndex(
+        address _owner,
+        uint256 _value
+    )internal
+    view
+    returns(uint256 i){
+       i = 0;
+        while (collections[_owner][i] != _value) {
+            i++;
+        }
+        return i;    
+    }
+
+    function removeFromExistingToNew(
+        address _owner, 
+        address _newOwner,
+        uint256 _token
+    )external onlyAuctionContract {
+        require(auctionAddress != address(0),
+        "Auction address not set yet" );
+        uint256 index = findIndex(_owner, _token);
+        require(index < collections[_owner].length, "Array out of bound");
+        for(uint256 i= index; i< collections[_owner].length - 1; i++)
+        {
+            collections[_owner][i] = collections[_owner][i+1];
+        }
+        collections[_owner].pop();
+        collections[_newOwner].push(_token);
+    }
+
+    function setOnAuctionTrue(
+        uint256 _tokenId
+    )external
+    onlyAuctionContract
+    {
+        require(auctionAddress != address(0),
+        "Auction address not set yet");
+        onAuction[_tokenId]= true;
+    }
+
+    function setOnAuctionFalse(
+        uint256 _tokenId
+    )external
+    onlyAuctionContract{
+        require(auctionAddress != address(0),
+        "Auction address not set yet");
+        onAuction[_tokenId]= false;
     }
 
     function mint(
@@ -774,8 +835,8 @@ contract BASYC_NFT is ERC721URIStorage {
         mintedId = _tokenIdCounter.current();
         collections[to].push(_tokenIdCounter.current());
         prices[_tokenIdCounter.current()] = price;
-        NFTOwner[_tokenIdCounter.current()] = msg.sender;
         _tokenIdCounter.increment();
+        onAuction[_tokenIdCounter.current()] = false;
     }
 
     /** @dev
@@ -802,36 +863,35 @@ contract BASYC_NFT is ERC721URIStorage {
      *  to update price from outside
      */
 
-    function updateTokenPrice(uint256 tokenId, uint256 updatedPrice) external {
-            require(
-                ownerOf(tokenId) == msg.sender,
-                "You are not onwer of this token"
-            );
+    function updateTokenPrice(
+        uint256 tokenId,
+        uint256 updatedPrice
+        ) onlyAuctionContract
+        external {
+        
+        require(auctionAddress != address(0),
+        "Auction address not set yet" );
             prices[tokenId] = updatedPrice;
         }
 
-
     function buyToken(uint256 tokenId) external {
-
+        require(
+            onAuction[tokenId]!= true,
+            "This token is already on Auction. Buy from there"
+         );
         address oldOwner = ownerOf(tokenId);
 
         IERC20(_tokenAddress).transferFrom(
             msg.sender,
-            NFTOwner[tokenId],
+           ownerOf(tokenId),
             prices[tokenId]
         );
-
-        uint256[] memory newCollection = new uint256[](
-            collections[oldOwner].length - 1
-        );
-        uint256 index = 0;
-        for (uint256 i = 0; i < collections[oldOwner].length; i++) {
-            if (collections[oldOwner][i] == tokenId) {
-                continue;
-            }
-            newCollection[index++] = collections[oldOwner][i];
+             
+        uint256 index = findIndex(oldOwner, tokenId);
+        for (uint256 i = index; i < collections[oldOwner].length -1; i++) {   
+             collections[oldOwner][i] = collections[oldOwner][i+1];
         }
-        collections[oldOwner] = newCollection;
+        collections[oldOwner].pop();
         _transfer(ownerOf(tokenId), msg.sender, tokenId);
         collections[msg.sender].push(tokenId);
     }
@@ -840,31 +900,13 @@ contract BASYC_NFT is ERC721URIStorage {
             return collections[holder];
         }
 
-
-    function getTokens(uint256 n)
+    function getTokens()
             external
             view
             returns (uint256[] memory nTokens)
         {
-            require(n > 0, "Value should be greater than 0 to get tokens");
-
-            if (n > mintedIdsArray.length) {
-                nTokens = new uint256[](mintedIdsArray.length);
-                uint256 reverseTrack = mintedIdsArray.length;
-                for (uint256 i = 0; i < mintedIdsArray.length; i++) {
-                    nTokens[i] = mintedIdsArray[reverseTrack - 1];
-                    reverseTrack--;
-                }
-            } else {
-                nTokens = new uint256[](n);
-                uint256 reverseTrack = mintedIdsArray.length;
-                for (uint256 i = 0; i < n; i++) {
-                    nTokens[i] = mintedIdsArray[reverseTrack - 1];
-                    reverseTrack--;
-                }
-            }
+            return mintedIdsArray;
         }
-
 }
 
 

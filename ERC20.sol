@@ -191,13 +191,13 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {}
 }
 
-contract BASYC_TKN is ERC20{
+contract Tokens is ERC20{
     
     address public owner;
     
-    constructor(string memory _name, string memory _symbol) public ERC20(_name, _symbol){
+    constructor() public ERC20("TOKENS", "TKNS"){
         owner = msg.sender;
-        _mint(owner, 500*10**18);
+        _mint(owner, 5000000 *10**18);
     }
     
     modifier onlyOwner{

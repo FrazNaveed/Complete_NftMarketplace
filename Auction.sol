@@ -90,149 +90,156 @@ interface IERC721 is IERC165 {
     ) external;
 }
 
-interface IERC721MultiCurrency {
-    function getSupportedCurrency(string memory) external view returns(address);
-
-    function getTokenPrice(uint256) external view returns(uint256, string memory);
+interface IERC721customs{
+    function setOnAuctionTrue(uint256)external;
+    function setOnAuctionFalse(uint256)external;
+    function removeFromExistingToNew(address,address, uint256)external;
+    function updateTokenPrice(uint256, uint256)external; 
 }
 
 contract Auction {
-    address private _nftAddress = address(0);
-    mapping(uint256 => uint256) private _endTimes;
-    mapping(uint256 => uint256) private _startTimes;
-    mapping(uint256 => address) private _highestBidder;
-    mapping(uint256 => uint256) private _highestBid;
-    uint256[] private _activeAuctions;
-    uint256[] private _temp;
-    address private _owner;
+    address private nftAddress;
+    address private tokenAddress;
+    mapping(uint256 => uint256) private endTimes;
+    mapping(uint256 => uint256) private startTimes;
+    mapping(uint256 => address) private highestBidder;
+    mapping(uint256 => uint256) private highestBid;
+    uint256[] private activeAuctions;
+    uint256[] private temp;
+    address private owner;
 
     event AuctionEnded(address winner, uint256 highestBid);
 
-    constructor(address nftToken) {
-        _owner = msg.sender;
-        _nftAddress = nftToken;
+    constructor(address _tokenAddr, address _nftTokenAddr) {
+        owner = msg.sender;
+        nftAddress = _nftTokenAddr;
+        tokenAddress = _tokenAddr;
     }
 
     modifier onlyOwner() {
-        require(msg.sender == _owner, "Access forbidden");
+        require(msg.sender == owner, "Access forbidden");
         _;
     }
 
-    function setNFTAddress(address nftToken) external onlyOwner {
-        _nftAddress = nftToken;
+    function setNFTAddress(address _nftTokenAddr) external onlyOwner {
+        nftAddress = _nftTokenAddr;
     }
 
-    function transferAuctionOwnership(address newOwner) external onlyOwner {
-        _owner = newOwner;
+    function setTokenAddress(address _tokenAddr) external onlyOwner {
+        tokenAddress = _tokenAddr;
+    }
+
+    function transferAuctionOwnership(address _newOwner) external onlyOwner {
+        owner = _newOwner;
     }
 
     function startAuction(
-        uint256 endTime,
-        uint256 startPrice,
-        uint256 tokenId
+        uint256 _endTime,
+        uint256 _startPrice,
+        uint256 _tokenId
     ) external {
         require(
-            endTime > block.timestamp,
+            _endTime > block.timestamp,
             "End time should be greater than current time"
         );
-        require(startPrice != 0, "Starting price can not be zero");
+        require(_startPrice != 0, "Starting price can not be zero");
         require(
-            IERC721(_nftAddress).ownerOf(tokenId) == msg.sender,
+            IERC721(nftAddress).ownerOf(_tokenId) == msg.sender,
             "You are not owner of this token"
         );
         require(
-            _endTimes[tokenId] < block.timestamp,
+            endTimes[_tokenId] < block.timestamp,
             "Token already in auction"
         );
 
-        _activeAuctions.push(tokenId);
-        _endTimes[tokenId] = endTime;
-        _highestBid[tokenId] = startPrice;
-        _highestBidder[tokenId] = msg.sender;
-        _startTimes[tokenId] = block.timestamp;
+        IERC721customs(nftAddress).setOnAuctionTrue(_tokenId);
+        activeAuctions.push(_tokenId);
+        endTimes[_tokenId] = _endTime;
+        highestBid[_tokenId] = _startPrice;
+        highestBidder[_tokenId] = msg.sender;
+        startTimes[_tokenId] = block.timestamp;
     }
 
-    function updatePrice(uint256 tokenId, uint256 newPrice) external {
+    function updateBid(uint256 _tokenId, uint256 _newPrice) external {
         require(
-            newPrice > _highestBid[tokenId],
+            _newPrice > highestBid[_tokenId],
             "New Bid should be greater than Highest Bid"
         );
         require(
-            msg.sender != IERC721(_nftAddress).ownerOf(tokenId),
+            msg.sender != IERC721(nftAddress).ownerOf(_tokenId),
             "Owner of token cannot bid"
         );
-        require(block.timestamp < _endTimes[tokenId], "Auction has ended");
-        require(_highestBidder[tokenId] != msg.sender, "You already bid");
-
-        (, string memory symbol) = IERC721MultiCurrency(_nftAddress).getTokenPrice(tokenId);
-        address currencyToken = IERC721MultiCurrency(_nftAddress).getSupportedCurrency(symbol);
+        require(block.timestamp < endTimes[_tokenId], "Auction has ended");
+        require(highestBidder[_tokenId] != msg.sender, "You already bid");
 
         require(
-            IERC20(currencyToken).balanceOf(msg.sender) >= _highestBid[tokenId],
+            IERC20(tokenAddress).balanceOf(msg.sender) >= highestBid[_tokenId],
             "Your balance should be greater than current bid"
         );
 
-        if (newPrice > _highestBid[tokenId]) {
+        if (_newPrice > highestBid[_tokenId]) {
             if (
-                _highestBidder[tokenId] == IERC721(_nftAddress).ownerOf(tokenId)
+                highestBidder[_tokenId] == IERC721(nftAddress).ownerOf(_tokenId)
             ) {
-                IERC20(currencyToken).transferFrom(
+                IERC20(tokenAddress).transferFrom(
                     msg.sender,
                     address(this),
-                    newPrice
+                    _newPrice
                 );
-                _highestBid[tokenId] = newPrice;
-                _highestBidder[tokenId] = msg.sender;
+                highestBid[_tokenId] = _newPrice;
+                highestBidder[_tokenId] = msg.sender;
             } else {
-                IERC20(currencyToken).transfer(
-                    _highestBidder[tokenId],
-                    _highestBid[tokenId]
+                IERC20(tokenAddress).transfer(
+                    highestBidder[_tokenId],
+                    highestBid[_tokenId]
                 );
-                IERC20(currencyToken).transferFrom(
+                IERC20(tokenAddress).transferFrom(
                     msg.sender,
                     address(this),
-                    newPrice
+                    _newPrice
                 );
-                _highestBid[tokenId] = newPrice;
-                _highestBidder[tokenId] = msg.sender;
+                 highestBid[_tokenId] = _newPrice;
+                 highestBidder[_tokenId] = msg.sender;
             }
         }
     }
 
-    function stopAuction(uint256 tokenId) public {
+    function stopAuction(uint256 _tokenId) public {
         require(
-            IERC721(_nftAddress).ownerOf(tokenId) == msg.sender,
+            IERC721(nftAddress).ownerOf(_tokenId) == msg.sender,
             "You are not owner of this token"
         );
-        require(_endTimes[tokenId] != 0, "Auction does not exist");
+        require(endTimes[_tokenId] != 0, "Auction does not exist");
 
-        (, string memory symbol) = IERC721MultiCurrency(_nftAddress).getTokenPrice(tokenId);
-        address currencyToken = IERC721MultiCurrency(_nftAddress).getSupportedCurrency(symbol);
-
-        if (_highestBidder[tokenId] != msg.sender) {
-            IERC20(currencyToken).transfer(msg.sender, _highestBid[tokenId]);
-            IERC721(_nftAddress).transferFrom(
+        if (highestBidder[_tokenId] != msg.sender) {
+            IERC20(tokenAddress).transfer(msg.sender, highestBid[_tokenId]);
+         IERC721customs(nftAddress).removeFromExistingToNew(IERC721(nftAddress).ownerOf(_tokenId), highestBidder[_tokenId], _tokenId);  
+            IERC721(nftAddress).transferFrom(
                 msg.sender,
-                _highestBidder[tokenId],
-                tokenId
+                highestBidder[_tokenId],
+                _tokenId
             );
-
-            _endTimes[tokenId] = 0;
-            _highestBidder[tokenId] = address(0);
-            _highestBid[tokenId] = 0;
-            emit AuctionEnded(_highestBidder[tokenId], _highestBid[tokenId]);
+            
+             IERC721customs(nftAddress).updateTokenPrice(_tokenId,highestBid[_tokenId]);
+             endTimes[_tokenId] = 0;
+             highestBidder[_tokenId] = address(0);
+             highestBid[_tokenId] = 0;
+            IERC721customs(nftAddress).setOnAuctionFalse(_tokenId);
+            emit AuctionEnded(highestBidder[_tokenId], highestBid[_tokenId]);
         } else {
-            _endTimes[tokenId] = 0;
-            _highestBidder[tokenId] = address(0);
-            _highestBid[tokenId] = 0;
+
+             endTimes[_tokenId] = 0;
+             highestBidder[_tokenId] = address(0);
+             highestBid[_tokenId] = 0;
+             IERC721customs(nftAddress).setOnAuctionFalse(_tokenId);
         }
     }
 
     function getAllAuctions() public view returns (uint256[] memory) {
-        return _activeAuctions;
+        return activeAuctions;
     }
 
-    function auctionInfo(uint256 tokenId)
+    function auctionInfo(uint256 _tokenId)
         external
         view
         returns (
@@ -242,14 +249,14 @@ contract Auction {
             uint256 tknBid
         )
     {
-        require(_endTimes[tokenId] != 0, "auction does not exist");
-        tknStartTime = _startTimes[tokenId];
-        tknEndTime = _endTimes[tokenId];
-        addr = _highestBidder[tokenId];
-        tknBid = _highestBid[tokenId];
+        require(endTimes[_tokenId] != 0, "auction does not exist");
+        tknStartTime = startTimes[_tokenId];
+        tknEndTime = endTimes[_tokenId];
+        addr = highestBidder[_tokenId];
+        tknBid = highestBid[_tokenId];
     }
 
-    function getEndtime(uint256 tokenId) public view returns (uint256) {
-        return _endTimes[tokenId];
+    function getEndtime(uint256 _tokenId) public view returns (uint256) {
+        return endTimes[_tokenId];
     }
 }
