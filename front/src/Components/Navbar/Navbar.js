@@ -1,22 +1,27 @@
-import {React, useEffect, useState} from "react";
+import { React, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
+import axios from "axios";
 import "./navbar.css";
 
 const Navbar = () => {
-
   const [walletAddress, setWalletAddress] = useState("");
+  console.log("Checking",walletAddress);
 
+  window.ethereum.on("accountsChanged", () => {
+    isWalletConnected();
+  });
 
   const isWalletConnected = () => {
     if (!window.ethereum) {
-      return;
+      alert("Install Metamask");
     }
     let address = window.ethereum.selectedAddress;
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
-    });
+    localStorage.setItem("walletAddress", address);
+   
     setWalletAddress(address ? address.toString() : "");
   };
+
+
   const connectWalletHandler = async () => {
     const { ethereum } = window;
 
@@ -33,26 +38,17 @@ const Navbar = () => {
     }
   };
 
-
-  useEffect(async ()=>{
-
-
-    if (!window.ethereum) {
-
-      connectWalletHandler()      // window.ethereum.on("accountsChanged", accountsChanged);
-     }
-     else{
-    
-     }
-     
-
-  },[]);
+  useEffect(async () => {
+    const addr = localStorage.getItem("walletAddress");
+    {addr && setWalletAddress(addr) }
+    isWalletConnected();
+  }, [walletAddress]);
 
   return (
     <>
-     <div className="navbar">
-       <h2>NFT Marketplace</h2>
-     <nav>
+      <div className="navbar">
+        <h2>NFT Marketplace</h2>
+        <nav>
           <ul className="items">
             <li>
               <NavLink to="/" activeClassName="active">
@@ -89,16 +85,26 @@ const Navbar = () => {
               </NavLink>
             </li>
           </ul>
+        </nav>
 
-      </nav>
-
-          <div className="buttons">
-          <NavLink to="/create">
-              <button><span>Create</span></button>
-            </NavLink>
-          <button>200 Tokens</button>
-          </div>
-     </div>
+        <div className="buttons">
+          {walletAddress ? (
+            <>
+              {" "}
+              <NavLink to="/create">
+                <button>
+                  <span>Create</span>
+                </button>
+              </NavLink>
+              <button>200 Tokens</button>
+            </>
+          ) : (
+            <button type="button"  onClick={connectWalletHandler}>
+              <p>Connect Wallet</p>
+            </button>
+          )}
+        </div>
+      </div>
     </>
   );
 };
