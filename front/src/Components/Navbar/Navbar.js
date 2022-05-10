@@ -5,22 +5,19 @@ import "./navbar.css";
 
 const Navbar = () => {
   const [walletAddress, setWalletAddress] = useState("");
-  console.log("Checking",walletAddress);
+  const [walletBalance, setWalletBalance] = useState(0);
 
   window.ethereum.on("accountsChanged", () => {
     isWalletConnected();
   });
 
-  const isWalletConnected = () => {
-    if (!window.ethereum) {
-      alert("Install Metamask");
-    }
+  const isWalletConnected = async () => {
+
     let address = window.ethereum.selectedAddress;
     localStorage.setItem("walletAddress", address);
-   
+
     setWalletAddress(address ? address.toString() : "");
   };
-
 
   const connectWalletHandler = async () => {
     const { ethereum } = window;
@@ -39,15 +36,32 @@ const Navbar = () => {
   };
 
   useEffect(async () => {
-    const addr = localStorage.getItem("walletAddress");
-    {addr && setWalletAddress(addr) }
-    isWalletConnected();
+    
+    if (!window.ethereum) {
+      alert("Intall Metamask Wallet");
+    }
+    let address = await window.ethereum.selectedAddress;
+    window.ethereum.on("accountsChanged", () => {
+      window.location.reload();
+    });
+    setWalletAddress(address ? address.toString() : "");
+    localStorage.setItem("walletAddress", address);
+
+    if (address) {
+      const response = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
+        params: { address: address },
+      });
+  
+      const balance = response.data.result /Math.pow(10, 18);
+      setWalletBalance(balance);
+    }
+   
   }, [walletAddress]);
 
   return (
     <>
       <div className="navbar">
-        <h2>NFT Marketplace</h2>
+        <p className="heading">NFT Marketplace</p>
         <nav>
           <ul className="items">
             <li>
@@ -96,10 +110,12 @@ const Navbar = () => {
                   <span>Create</span>
                 </button>
               </NavLink>
-              <button>200 Tokens</button>
+              <button>
+                {walletBalance}{" "}
+              </button>
             </>
           ) : (
-            <button type="button"  onClick={connectWalletHandler}>
+            <button type="button" onClick={connectWalletHandler}>
               <p>Connect Wallet</p>
             </button>
           )}

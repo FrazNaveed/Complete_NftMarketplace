@@ -1,9 +1,95 @@
-import React from 'react'
+import { React, useEffect } from "react";
+import "./collection.css";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import axios from "axios";
 
 const Collection = () => {
-  return (
-    <div>Collection</div>
-  )
-}
+  var tokens = [];
 
-export default Collection
+  const [nfts, setNfts] = useState([]);
+
+  useEffect(async () => {
+
+    let address = await window.ethereum.selectedAddress;
+
+    console.log(address);
+    const response = await axios.get(`http://localhost:8080/getCollections`, {
+      params:{address: address}
+    });
+
+
+    for (var i = 0; i < response.data.result.length; i++) {
+      try {
+        const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
+          params: { tokenId: response.data.result[i] },
+        });
+        const uriResponse = await axios.get(uri.data.result);
+        const price = await axios.get(`http://localhost:8080/getTokenPrice`, {
+          params: { tokenId: response.data.result[i] },
+        });
+
+        tokens.push({
+          ...uriResponse.data,
+          tokenId: response.data.result[i],
+          price: price.data.result,
+        });
+
+      } catch (err) {}
+    }
+
+    setNfts(tokens);
+   
+    
+  },[]);
+
+  console.log("My NFTs",nfts);
+  return (
+    <>
+      <ul
+        style={{
+          paddingLeft: "120px",
+          marginTop: "50px",
+          textDecoration: "none",
+        }}
+      >
+        {" "}
+        <li>
+          <h1>Collections</h1>
+        </li>
+      </ul>
+
+      <div id="containerStyle">
+        {nfts.map((value,index) => {
+          return (
+            <div className="card" key={index}>
+              <Link to={`/details/${value.tokenId}`}>
+                <video
+                  src={value.media}
+                  className="vid"
+                  style={{ width: "268px" }}
+                />
+
+                <div className="cardDetails">
+                  <img src="https://picsum.photos/50/50" />
+                  <h4>Tenz</h4>
+                  <p>
+                    Price:{" "}
+                    <span style={{ color: "orangered", fontWeight: "bold" }}>
+                      {value.price/Math.pow(10,18)} Tokens
+                    </span>
+                  </p>
+                </div>
+
+                <h2> {value.title}</h2>
+
+              </Link>
+            </div>
+          );
+        })}
+      </div>
+    </>
+  );
+};
+
+export default Collection;

@@ -25,7 +25,7 @@ function App() {
         <Route exact path="/sale" element={<Sale/>}  />
         <Route exact path="/creators" element={<Creators/>}  />
         <Route exact path="/create" element={<Create/>}  />
-        <Route exact path="/details" element={<Details/>}  />
+        <Route exact path="/details/:tokenId" element={<Details/>}  />
         <Route element={<ErrorPage/>}/>  
     </Routes>
 

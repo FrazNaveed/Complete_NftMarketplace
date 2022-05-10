@@ -21,13 +21,16 @@
   background-image: linear-gradient(  rgb(46, 118, 226, 0.6), transparent);
   border: 0.1px solid orangered;
   border-radius: 12px;
+
 }
 
 
-
-.vid{
+.upperSection video{
   border-top-left-radius: 12px;
   border-top-right-radius: 12px;
+  height: 200px;
+  object-fit: fill;
+  
 }
 
 img{
@@ -43,7 +46,7 @@ a{
   color: white;
 }
 
-.cardDetails{
+.lowerSection{
   display: flex;
   flex-direction: row;
   display: 1px solid yellow;
@@ -51,7 +54,10 @@ a{
   align-items: center;
 
 }
-.cardDetails h4{
+h3{
+  margin: 2px;
+}
+.lowerSection h4{
   margin-right: 45px;
 }
 p{

@@ -15,8 +15,16 @@ li{
 }
 li> a{
     text-decoration: none;
-    color: white;
-    
+    color: white;  
+}
+
+.heading{
+    background: linear-gradient(to right, orangered, rgb(46, 118, 226));
+    background-clip: text;
+    color:  transparent;
+    font-size: 2rem;
+    font-weight: bold;
+
 }
 
 .navbar{

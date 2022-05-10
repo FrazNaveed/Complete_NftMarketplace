@@ -1,50 +1,90 @@
-import React from "react";
+import { React, useEffect } from "react";
 import "./explore.css";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import axios from "axios";
 
 const Explore = () => {
+  var tokens = [];
 
-  let arr = [1,2,4,5,6,5,6,7,8, 7,8];
+  const [nfts, setNfts] = useState([]);
 
-  // const [showModal, setShowModal] = useState(false);
-  // const [modalId,setModalId]=useState(null);
+  useEffect(async () => {
+    const response = await axios.get(`http://localhost:8080/getTokens`, {});
 
-  // const setModal=(id)=>{
-  //   console.log("modal",showModal);
-  //   console.log('ids ',id);
-  //   setModalId(id);
-  //   setShowModal(true); 
-  // }
+    response.data.result.reverse();
 
+    for (var i = 0; i < response.data.result.length; i++) {
+      try {
+        const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
+          params: { tokenId: response.data.result[i] },
+        });
+        const uriResponse = await axios.get(uri.data.result);
+        const price = await axios.get(`http://localhost:8080/getTokenPrice`, {
+          params: { tokenId: response.data.result[i] },
+        });
+
+        tokens.push({
+          ...uriResponse.data,
+          tokenId: response.data.result[i],
+          price: price.data.result,
+        });
+
+      } catch (err) {}
+    }
+
+    setNfts(tokens);
+   
+    
+  },[]);
+
+  console.log("My NFTs",nfts);
   return (
     <>
-      <ul style={{paddingLeft: "120px", marginTop:"50px", textDecoration:"none"}}> <li><h1>Explore</h1></li></ul>
+      <ul
+        style={{
+          paddingLeft: "120px",
+          marginTop: "50px",
+          textDecoration: "none",
+        }}
+      >
+        {" "}
+        <li>
+          <h1>Explore</h1>
+        </li>
+      </ul>
 
-     <div id="containerStyle" >
-     {
-        arr.map((value)=>{
-          return(
-            <div className="card"> 
-             <Link to="/details">
-            <video src="https://gateway.pinata.cloud/ipfs/QmTv2Tx9XQeLrvg8rs9LCCih6FrHt2mXs3LVBt23ZD7eE7" className="vid" style={{width: "268px"}} />   
-    
-           
-               
-               <div className="cardDetails">
-               <img src="https://picsum.photos/50/50" />
-                <h4>Tenz</h4>
-                <p>Price: <span style={{color: "orangered" , fontWeight: "bold"}}>20 Tokens</span></p>
+      <div id="containerStyle">
+        {nfts.map((value,index) => {
+          return (
+            <div className="card" key={index}>
+              <Link to={`/details/${value.tokenId}`}>
+               <div className="upperSection">
+                <video
+                  src={value.media}
+                  preload="auto|metadata|none"
+                  className="vid"
+                  style={{ width: "268px" }}
+                />
                </div>
-              <p> lorem ipsum dolor sit amet, lorem ipsum dolor sit amet, lorem ipsum
-              </p>
+                <div className="lowerSection">
+                  <img src="https://picsum.photos/50/50" />
+                  <h4>Tenz</h4>
+                  <p>
+                    Price:{" "}
+                    <span style={{ color: "orangered", fontWeight: "bold" }}>
+                      {value.price/Math.pow(10,18)} Tokens
+                    </span>
+                  </p>
+                </div>
+
+                <h2> {value.title}</h2>
+
               </Link>
             </div>
           );
-        })
-      }
-     </div>
+        })}
+      </div>
     </>
   );
 };

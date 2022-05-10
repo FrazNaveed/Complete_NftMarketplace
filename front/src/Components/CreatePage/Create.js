@@ -4,7 +4,7 @@ import axios from "axios";
 import "./create.css";
 
 const Create = () => {
-  const maxSize = 12000000;
+  const maxSize = 2097152;
   const [selectedFile, setSelectedFile] = useState(null);
   const [path, setPath] = useState("");
   const [mintMessage, setMintMessage] = useState("");
@@ -17,7 +17,7 @@ const Create = () => {
 
   const onDrop = (acceptedFile) => {
     if (acceptedFile.length == 0) {
-      alert("File size must be less than 12mb");
+      alert("File size must be less than 2mb");
     } else {
       setSelectedFile(acceptedFile);
       setPath((acceptedFile[0].path).toString());
@@ -25,15 +25,19 @@ const Create = () => {
     }
   };
 
+  useEffect(async ()=>{
+    if (!window.ethereum) {
+      alert("Intall Metamask Wallet");
+    }
+    let address = await window.ethereum.selectedAddress;
+    window.ethereum.on("accountsChanged", () => {
+      window.location.reload();
+    });
+    setWalletAddress(address ? address.toString() : "");
+  })
 
   const mintNFT = async (e) => {
     e.preventDefault();
-    const { ethereum } = window;
-    const accounts = await ethereum.request({
-      method: "eth_requestAccounts",
-    });
-    setWalletAddress(accounts[0]);
-    console.log(walletAddress); 
     if (
       mintTitle == "" ||
       mintPrice == 0 ||
@@ -48,13 +52,6 @@ const Create = () => {
       return;
     }
 
-    // const formData = {
-    //   msgsender: walletAddress,
-    //   title: mintTitle,
-    //   price: mintPrice,
-    //   category: mintCategory,
-    //   description: dexcription,
-    // }
     const formData = new FormData();
     formData.append("msgsender", walletAddress);
     formData.append("title", mintTitle);
@@ -67,7 +64,7 @@ const Create = () => {
     console.log(formData);
 
     const response = await axios.post(
-      `http://localhost:3000/mintNFT`,
+      `http://localhost:8080/mintNFT`,
       formData,
       {
         headers: {
@@ -89,7 +86,7 @@ const Create = () => {
         params,
       });
       setMintMessage(
-        "Transaction successfully sent, <a href='https://ropsten.etherscan.io/tx/" +
+        "Transaction successfully sent, <a href='https://testnet.bscscan.com/tx/" +
           signed +
           "' target='_blank'>view on etherescan</a>"
       );

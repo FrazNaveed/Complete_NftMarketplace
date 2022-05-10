@@ -17,12 +17,14 @@
     margin-bottom: 30px;
 }
 .video{
-    border: 1px solid rgb(189, 71, 17);
+    /* border: 1px solid rgb(189, 71, 17); */
     margin-top: 30px;
     border-radius: 10px;
-
 }
 
+.vidSection .video{
+    border: 3px solid rgb(189, 71, 17);
+}
 
 .nameNdPrice{
     display: flex;
