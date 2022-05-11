@@ -24,6 +24,8 @@
 
 .vidSection .video{
     border: 3px solid rgb(189, 71, 17);
+    height: 700px;
+    object-fit: fill;
 }
 
 .nameNdPrice{

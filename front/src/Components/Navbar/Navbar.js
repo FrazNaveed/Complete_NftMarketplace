@@ -42,7 +42,7 @@ const Navbar = () => {
     }
 
     const address = await window.ethereum.request({ method: 'eth_accounts' });
-    await setWalletAddress(address[0]);
+     setWalletAddress(address[0]);
 
 
     window.ethereum.on("accountsChanged", () => {

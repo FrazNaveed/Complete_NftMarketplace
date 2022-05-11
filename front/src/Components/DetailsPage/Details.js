@@ -9,6 +9,7 @@ const Details = () => {
   const [tokenData, setTokenData] = useState({});
   const [showPlaceBid, setShowPlaceBid] = useState(false);
   const [showPriceUpdate, setShowPriceUpdate] = useState(false);
+  const [showStartAuction, setShowStartAuction] = useState(false);
 
   const buyNFT = async () => {
     let address = await window.ethereum.selectedAddress;
@@ -27,19 +28,29 @@ const Details = () => {
         tokenId: tokenId,
       });
 
+      const tx = response.data.signRequired;
+
       if (response.status == 200) {
-        for (var i = 0; i < response.data.signRequired.length; i++) {
-          // setTokenActionMessage("Sending transaction#" + (i + 1));
-          var params = [
-            {
-              ...response.data.signRequired[i],
-            },
-          ];
-          await window.ethereum.request({
+        for (let txObj of tx) {
+          var params = [txObj];
+
+          const txHash = await window.ethereum.request({
             method: "eth_sendTransaction",
             params,
           });
+
+          let txReceipt = null;
+          while(txReceipt == null)
+          {
+              txReceipt = await window.ethereum.request({
+              method: "eth_getTransactionReceipt",
+              params:[txHash],
+            });
+          }
         }
+
+        window.location.reload();
+
         // setTokenActionMessage(
         //   "Congratulations! Your NFT is on its way to you."
         // );
@@ -103,11 +114,13 @@ const Details = () => {
     if (!window.ethereum) {
       alert("Intall Metamask Wallet");
     }
-    let address = await window.ethereum.selectedAddress;
+
+    const address = await window.ethereum.request({ method: "eth_accounts" });
+
     window.ethereum.on("accountsChanged", () => {
       window.location.reload();
     });
-    setWalletAddress(address ? address.toString() : "");
+    setWalletAddress(address[0]);
 
     const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
       params: { tokenId: tokenId },
@@ -143,8 +156,6 @@ const Details = () => {
         price: price.data.result,
       });
     }
-
-
   }, [walletAddress]);
 
   console.log(tokenData);
@@ -161,9 +172,12 @@ const Details = () => {
         </div>
 
         <div className="price">
-          <h3>Price:</h3>
+          <h3>{tokenData.tknBid ? "Current Bid:" : "Current Price:"}</h3>
           <p>
-            {tokenData.price / Math.pow(10, 18)}{" "}
+            {tokenData.tknBid
+              ? tokenData.tknBid / Math.pow(10, 18)
+              : tokenData.price / Math.pow(10, 18)}
+
             <span style={{ color: "orangered", marginRight: "15px" }}>
               Tokens
             </span>
@@ -178,31 +192,29 @@ const Details = () => {
         </div>
 
         <div className="button">
-          <button onClick={() => buttonHandler()}>
+          {/* <button onClick={() => buttonHandler()}>
             {tokenData.creator != walletAddress
               ? tokenData.tknBid
                 ? "Place Bid"
                 : "Buy"
-              : tokenData.tknBid
-              && "Stop & Transfer"
-               }
-          </button>
-
-          {tokenData.creator == walletAddress &&
-                        !tokenData.tknBid ? (
-                            <button
-                              
-          
-                                // onClick={() => setShowStartAuction(true)}
-                            >
-                                Put on Auction
-                            </button>
-                        ) : (
-                            ""
-                        )}
-
-
-
+              : tokenData.tknBid && "Stop & Transfer"}
+          </button> */}
+          {tokenData.creator != walletAddress ? (
+            tokenData.tknBid ? (
+              <button>Place Bid</button>
+            ) : (
+              <button onClick={buyNFT}>Buy</button>
+            )
+          ) : (
+            tokenData.tknBid && <button>Stop & Transfer</button>
+          )}
+          {tokenData.creator == walletAddress && !tokenData.tknBid ? (
+            <button onClick={() => setShowStartAuction(true)}>
+              Put on Auction
+            </button>
+          ) : (
+            ""
+          )}
         </div>
       </div>
 
