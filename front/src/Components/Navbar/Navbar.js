@@ -36,20 +36,24 @@ const Navbar = () => {
   };
 
   useEffect(async () => {
-    
-    if (!window.ethereum) {
+    const {ethereum} = window;
+    if (!ethereum) {
       alert("Intall Metamask Wallet");
     }
-    let address = await window.ethereum.selectedAddress;
+
+    const address = await window.ethereum.request({ method: 'eth_accounts' });
+    await setWalletAddress(address[0]);
+
+
     window.ethereum.on("accountsChanged", () => {
       window.location.reload();
     });
-    setWalletAddress(address ? address.toString() : "");
-    localStorage.setItem("walletAddress", address);
 
-    if (address) {
+    
+
+    if (walletAddress) {
       const response = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
-        params: { address: address },
+        params: { address: walletAddress },
       });
   
       const balance = response.data.result /Math.pow(10, 18);

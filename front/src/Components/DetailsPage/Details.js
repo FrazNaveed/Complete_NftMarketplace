@@ -4,15 +4,13 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 
 const Details = () => {
-  
   let { tokenId } = useParams();
   const [walletAddress, setWalletAddress] = useState("");
   const [tokenData, setTokenData] = useState({});
-
+  const [showPlaceBid, setShowPlaceBid] = useState(false);
+  const [showPriceUpdate, setShowPriceUpdate] = useState(false);
 
   const buyNFT = async () => {
-
-
     let address = await window.ethereum.selectedAddress;
     const balance = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
       params: { address: address },
@@ -49,7 +47,54 @@ const Details = () => {
         // setTokenActionMessage(
         //   "An error occured while crafting transactions, try refreshing the page."
         // );
-        alert("hello error")
+        alert("hello error");
+      }
+    }
+  };
+
+  const stopBid = async () => {
+    const response = await axios.post(`http://localhost:8080/stopAuction`, {
+      msgsender: walletAddress,
+      tokenId: tokenId,
+    });
+
+    if (response.status == 200) {
+      for (var i = 0; i < response.data.signRequired.length; i++) {
+        // setTokenActionMessage(
+        //     "Sending transaction#" + (i + 1) + " to the network..."
+        // );
+        var params = [
+          {
+            ...response.data.signRequired[i],
+          },
+        ];
+        await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params,
+        });
+      }
+      // setTokenActionMessage(
+      //     "Auction stop request sent to network, please wait for transaction to be mined."
+      // );
+    } else {
+      // setTokenActionMessage(
+      //     "An error occured while crafting transactions, try refreshing the page."
+      // );
+    }
+  };
+
+  let buttonHandler = () => {
+    if (tokenData.creator != walletAddress) {
+      if (tokenData.tknBid) {
+        setShowPlaceBid(true);
+      } else {
+        buyNFT();
+      }
+    } else {
+      if (tokenData.tknBid) {
+        stopBid();
+      } else {
+        setShowPriceUpdate(true);
       }
     }
   };
@@ -75,21 +120,31 @@ const Details = () => {
 
     const uriResponse = await axios.get(uri.data.result);
 
-    setTokenData({
-      ...uriResponse.data,
-      price: price.data.result,
-    });
+    // const history = await axios.get(`http://localhost:8080/getNftHistory`, {
+    //   params: { tokenId: tokenId },
+    // });
 
-    const history = await axios.get(`http://localhost:8080/getNftHistory`, {
-      params: { tokenId: tokenId },
-    });
+    var auctioned = null;
+    try {
+      auctioned = await axios.get(`http://localhost:8080/auctionInfo`, {
+        params: { tokenId: tokenId },
+      });
+    } catch (err) {}
 
-    console.log(history.data.result);
+    if (auctioned) {
+      setTokenData({
+        ...auctioned.data.result,
+        ...uriResponse.data,
+        price: price.data.result,
+      });
+    } else {
+      setTokenData({
+        ...uriResponse.data,
+        price: price.data.result,
+      });
+    }
 
-    let buttonHandler = () => {
-      if (tokenData.creator != walletAddress) {
-      }
-    };
+
   }, [walletAddress]);
 
   console.log(tokenData);
@@ -123,7 +178,31 @@ const Details = () => {
         </div>
 
         <div className="button">
-          <button onClick={buyNFT}>Bid</button>
+          <button onClick={() => buttonHandler()}>
+            {tokenData.creator != walletAddress
+              ? tokenData.tknBid
+                ? "Place Bid"
+                : "Buy"
+              : tokenData.tknBid
+              && "Stop & Transfer"
+               }
+          </button>
+
+          {tokenData.creator == walletAddress &&
+                        !tokenData.tknBid ? (
+                            <button
+                              
+          
+                                // onClick={() => setShowStartAuction(true)}
+                            >
+                                Put on Auction
+                            </button>
+                        ) : (
+                            ""
+                        )}
+
+
+
         </div>
       </div>
 
