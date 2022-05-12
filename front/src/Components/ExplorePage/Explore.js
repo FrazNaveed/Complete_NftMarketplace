@@ -54,6 +54,8 @@ const Explore = () => {
         </li>
       </ul>
 
+
+      
       <div id="containerStyle">
         {nfts.map((value,index) => {
           return (

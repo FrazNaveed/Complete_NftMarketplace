@@ -2,6 +2,8 @@ import { useState, useEffect, React } from "react";
 import "./details.css";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import History from "../HIstorySection/History";
+import { ownerDocument } from "@material-ui/core";
 
 const Details = () => {
   let { tokenId } = useParams();
@@ -95,7 +97,7 @@ const Details = () => {
   };
 
   let buttonHandler = () => {
-    if (tokenData.creator != walletAddress) {
+    if (tokenData.owner != walletAddress) {
       if (tokenData.tknBid) {
         setShowPlaceBid(true);
       } else {
@@ -131,6 +133,13 @@ const Details = () => {
       params: { tokenId: tokenId },
     });
 
+
+    const owner = await axios.get(`http://localhost:8080/ownerOf`, {
+      params: { tokenId: tokenId },
+    });
+
+    
+
     const uriResponse = await axios.get(uri.data.result);
 
     // const history = await axios.get(`http://localhost:8080/getNftHistory`, {
@@ -149,16 +158,17 @@ const Details = () => {
         ...auctioned.data.result,
         ...uriResponse.data,
         price: price.data.result,
+        owner: owner.data.result.result.toLowerCase()
       });
     } else {
       setTokenData({
         ...uriResponse.data,
         price: price.data.result,
+        owner: owner.data.result.toLowerCase()
       });
     }
   }, [walletAddress]);
-
-  console.log(tokenData);
+ 
   return (
     <div className="container">
       <div className="vidSection">
@@ -199,7 +209,7 @@ const Details = () => {
                 : "Buy"
               : tokenData.tknBid && "Stop & Transfer"}
           </button> */}
-          {tokenData.creator != walletAddress ? (
+          {tokenData.owner != walletAddress ? (
             tokenData.tknBid ? (
               <button>Place Bid</button>
             ) : (
@@ -208,10 +218,14 @@ const Details = () => {
           ) : (
             tokenData.tknBid && <button>Stop & Transfer</button>
           )}
-          {tokenData.creator == walletAddress && !tokenData.tknBid ? (
+
+          {
+          tokenData.owner == walletAddress && !tokenData.tknBid ? (
+            <>
             <button onClick={() => setShowStartAuction(true)}>
               Put on Auction
             </button>
+            </>
           ) : (
             ""
           )}
@@ -222,69 +236,9 @@ const Details = () => {
         <h2>Buying History:</h2>
       </div>
 
-      <div className="historySection">
-        <table>
-          <thead className="tHeader">
-            <tr>
-              <td className="tableCell">Event</td>
-              <td className="tableCell">FROM</td>
-              <td className="tableCell">TO</td>
-              <td className="tableCell">PRICE</td>
-              <td className="tableCell">DATE</td>
-            </tr>
-          </thead>
 
-          <tbody>
-            <tr>
-              <td className="tableCell">Event</td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">20 TOKENS</td>
-              <td className="tableCell">DATE</td>
-            </tr>
+            <History/>
 
-            <tr>
-              <td className="tableCell">Event</td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">20 TOKENS</td>
-              <td className="tableCell">DATE</td>
-            </tr>
-
-            <tr>
-              <td className="tableCell">Event</td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">20 TOKENS</td>
-              <td className="tableCell">DATE</td>
-            </tr>
-
-            <tr>
-              <td className="tableCell">Event</td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">
-                0xbD9D4a71B76C494958d9D258A1e3d4c0801495e0
-              </td>
-              <td className="tableCell">20 TOKENS</td>
-              <td className="tableCell">DATE</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 };
