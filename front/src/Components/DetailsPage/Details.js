@@ -3,15 +3,69 @@ import "./details.css";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import History from "../HIstorySection/History";
-import { ownerDocument } from "@material-ui/core";
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import { flexbox } from "@mui/system";
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexDirection: "column",
+  transform: 'translate(-50%, -50%)',
+  width: 300,
+  height: 300,
+  bgcolor: 'black',
+  border: '1px solid orangered',
+  boxShadow: 24,
+  p: 4,
+  color: "white",
+  borderRadius: "12px"  
+};
+
+const buttonStyle = {
+  position: "relative",
+  border: "4px solid transparent",
+  borderRadius: "10px",
+  background: "black",
+  backgroundClip: "paddingBox",
+  width: "140px",
+  height: "45px",
+  color: "white",
+  fontSize: "20px",
+  fontWeight: "bold",
+  border: "1px solid orangered",
+  cursor: "pointer",
+  boxShadow: "0px 4px 10px rgb(46, 118, 226, 0.4)",
+  marginTop: "4px"
+
+}
 
 const Details = () => {
   let { tokenId } = useParams();
   const [walletAddress, setWalletAddress] = useState("");
   const [tokenData, setTokenData] = useState({});
-  const [showPlaceBid, setShowPlaceBid] = useState(false);
-  const [showPriceUpdate, setShowPriceUpdate] = useState(false);
-  const [showStartAuction, setShowStartAuction] = useState(false);
+
+
+  const [bidModalTrue,setBidModalTrue] = useState(false);
+  const [auctionModalTrue, setAuctionModalTrue] = useState(false);
+
+  // Putting on Auction states set from Modal
+  const [startAuctionPrice, setStartAuctionPrice] = useState("");
+  const [auctionEndDate, setAuctionEndDate] = useState();
+  const [bidprice, setBidPrice] = useState("");
+  
+
+  const [startAuctionMessage, setStartAuctionMessage] = useState("");
+  const [startAuctionMessageState, setStartAuctionMessageState] =useState("");
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
 
   const buyNFT = async () => {
     let address = await window.ethereum.selectedAddress;
@@ -65,7 +119,56 @@ const Details = () => {
     }
   };
 
-  const stopBid = async () => {
+
+  let startAuction = async () => {
+
+    console.log(typeof(bidprice));
+    if (startAuctionPrice == "" || startAuctionPrice < 0 || startAuctionPrice < (tokenData.price / Math.pow(10, 18))) {
+        alert("Price must not be empty, 0 or less than prev price");
+        return;
+    }
+    var selectedTimestamp = new Date(auctionEndDate).getTime() / 1000;
+    if (
+        auctionEndDate == "" ||
+        selectedTimestamp < Date.now() / 1000
+    ){
+           alert("Error: Please enter a valid date in future.");
+          return;
+    }
+    const response = await axios.post(
+        `http://localhost:8080/startAuction`,
+        {
+            tokenId: tokenId,
+            startPrice: startAuctionPrice,
+            endTime: selectedTimestamp,
+            tokenOwner: walletAddress,
+        }
+    );
+    if (response.status == 200) {
+        // setStartAuctionMessage("Sending transaction to the network...");
+        // setStartAuctionMessageState("info");
+        var params = [
+            {
+                ...response.data.signRequired,
+            },
+        ];
+        await window.ethereum.request({
+            method: "eth_sendTransaction",
+            params,
+        });
+        // setStartAuctionMessage(
+        //     "Auction start request sent, please wait for transaction to be mined."
+        // );
+        // setStartAuctionMessageState("success");
+    } else {
+        // setStartAuctionMessage(
+        //     "An error occured while crafting transactions, try refreshing the page."
+        // );
+        // setStartAuctionMessageState("error");
+    }
+};
+
+  const stopAuction = async () => {
     const response = await axios.post(`http://localhost:8080/stopAuction`, {
       msgsender: walletAddress,
       tokenId: tokenId,
@@ -96,19 +199,58 @@ const Details = () => {
     }
   };
 
+  let updateBid = async () => {
+    // setPriceUpdateMessage("Contacting gateway to craft transaction...");
+    // setPriceUpdateMessageState("info");
+    // if (priceUpdatePrice == "" || priceUpdatePrice < 0) {
+    //     setPriceUpdateMessage("Error: Please enter a valid price.");
+    //     setPriceUpdateMessageState("error");
+    //     return;
+    // }
+    // const response = await axios.post(
+    //     `${process.env.REACT_APP_URL}/setTokenPrice`,
+    //     {
+    //         msgsender: walletAddress,
+    //         newPrice: priceUpdatePrice,
+    //         tokenId: id,
+    //         chainId: chain,
+    //     }
+    // );
+
+    // if (response.status == 200) {
+    //     setPriceUpdateMessage("Sending transaction to the network...");
+    //     setPriceUpdateMessageState("info");
+    //     var params = [
+    //         {
+    //             ...response.data.signRequired,
+    //         },
+    //     ];
+    //     await window.ethereum.request({
+    //         method: "eth_sendTransaction",
+    //         params,
+    //     });
+    //     setPriceUpdateMessage(
+    //         "Price update request sent, please wait for transaction to be mined."
+    //     );
+    //     setPriceUpdateMessageState("success");
+    // } else {
+    //     setPriceUpdateMessage(
+    //         "An error occured while crafting transactions, try refreshing the page."
+    //     );
+    //     setPriceUpdateMessageState("error");
+    // }
+};
+
   let buttonHandler = () => {
     if (tokenData.owner != walletAddress) {
-      if (tokenData.tknBid) {
-        setShowPlaceBid(true);
-      } else {
-        buyNFT();
-      }
-    } else {
-      if (tokenData.tknBid) {
-        stopBid();
-      } else {
-        setShowPriceUpdate(true);
-      }
+      
+      setBidModalTrue(true);
+      handleOpen();
+      
+    } 
+    else if(tokenData.owner == walletAddress && !tokenData.tknBid ) {
+      setAuctionModalTrue(true);
+      handleOpen();
     }
   };
 
@@ -138,13 +280,9 @@ const Details = () => {
       params: { tokenId: tokenId },
     });
 
-    
-
+  
     const uriResponse = await axios.get(uri.data.result);
 
-    // const history = await axios.get(`http://localhost:8080/getNftHistory`, {
-    //   params: { tokenId: tokenId },
-    // });
 
     var auctioned = null;
     try {
@@ -158,7 +296,7 @@ const Details = () => {
         ...auctioned.data.result,
         ...uriResponse.data,
         price: price.data.result,
-        owner: owner.data.result.result.toLowerCase()
+        owner: owner.data.result.toLowerCase()
       });
     } else {
       setTokenData({
@@ -202,42 +340,63 @@ const Details = () => {
         </div>
 
         <div className="button">
-          {/* <button onClick={() => buttonHandler()}>
-            {tokenData.creator != walletAddress
-              ? tokenData.tknBid
-                ? "Place Bid"
-                : "Buy"
-              : tokenData.tknBid && "Stop & Transfer"}
-          </button> */}
           {tokenData.owner != walletAddress ? (
             tokenData.tknBid ? (
-              <button>Place Bid</button>
+              <button onClick={buttonHandler}>Place Bid</button>
             ) : (
               <button onClick={buyNFT}>Buy</button>
             )
           ) : (
-            tokenData.tknBid && <button>Stop & Transfer</button>
+            tokenData.tknBid && <button onClick={stopAuction}>Stop & Transfer</button>
           )}
 
           {
           tokenData.owner == walletAddress && !tokenData.tknBid ? (
             <>
-            <button onClick={() => setShowStartAuction(true)}>
+            <button onClick={buttonHandler}>
               Put on Auction
             </button>
             </>
           ) : (
             ""
           )}
+
+
         </div>
       </div>
 
       <div className="header">
         <h2>Buying History:</h2>
       </div>
+      <History/>
 
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          
+          {bidModalTrue && 
+          <>
+          <h2>Enter Your Bid</h2>
+          <input type="number" placeholder="Enter Bid" onChange={(e)=>setBidPrice(e.target.value)} style={{width: "255px", marginTop: "25px"}}/>
+          <button style={buttonStyle} onClick={updateBid}>Bid</button>
+          </>
+          }
 
-            <History/>
+          { auctionModalTrue &&
+           <>
+           <h2>Enter intial price for Auction</h2>
+           <input type="number" placeholder="Enter Auction Price" onChange={(e)=>setStartAuctionPrice(e.target.value)} style={{width: "255px", marginTop: "25px"}}/>
+            <input type="datetime-local"  onChange={(e)=>setAuctionEndDate(e.target.value)} min={Date.now()}  style={{width: "255px", marginTop: "5px"}}/>
+           <button style={buttonStyle} onClick={startAuction}>Auction!</button>
+           </>
+          }
+        </Box>
+      </Modal>
+
 
     </div>
   );

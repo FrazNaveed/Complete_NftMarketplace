@@ -10,14 +10,12 @@ const Collection = () => {
   const [nfts, setNfts] = useState([]);
 
   useEffect(async () => {
-
     let address = await window.ethereum.selectedAddress;
 
     console.log(address);
     const response = await axios.get(`http://localhost:8080/getCollections`, {
-      params:{address: address}
+      params: { address: address },
     });
-
 
     for (var i = 0; i < response.data.result.length; i++) {
       try {
@@ -34,16 +32,12 @@ const Collection = () => {
           tokenId: response.data.result[i],
           price: price.data.result,
         });
-
       } catch (err) {}
     }
 
     setNfts(tokens);
-   
-    
-  },[]);
-
-  console.log("My NFTs",nfts);
+  }, []);
+  
   return (
     <>
       <ul
@@ -55,34 +49,35 @@ const Collection = () => {
       >
         {" "}
         <li>
-          <h1>Collections</h1>
+          <h1>Explore</h1>
         </li>
       </ul>
 
       <div id="containerStyle">
-        {nfts.map((value,index) => {
+        {nfts.map((value, index) => {
           return (
             <div className="card" key={index}>
               <Link to={`/details/${value.tokenId}`}>
-                <video
-                  src={value.media}
-                  className="vid"
-                  style={{ width: "268px" }}
-                />
-
-                <div className="cardDetails">
+                <div className="upperSection">
+                  <video
+                    src={value.media}
+                    preload="auto|metadata|none"
+                    className="vid"
+                    style={{ width: "268px" }}
+                  />
+                </div>
+                <div className="lowerSection">
                   <img src="https://picsum.photos/50/50" />
                   <h4>Tenz</h4>
                   <p>
                     Price:{" "}
                     <span style={{ color: "orangered", fontWeight: "bold" }}>
-                      {value.price/Math.pow(10,18)} Tokens
+                      {value.price / Math.pow(10, 18)} Tokens
                     </span>
                   </p>
                 </div>
 
                 <h2> {value.title}</h2>
-
               </Link>
             </div>
           );
