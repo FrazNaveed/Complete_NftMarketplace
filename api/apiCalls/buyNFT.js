@@ -1,13 +1,17 @@
 var Web3 = require("Web3");
-const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
-var nftAddress = "0x25873A135EcFaeCdb4Da5ecB87547FEaD67a9DCf";
+const web3 = new Web3(process.env.TESTNET_RPC);
+
+
 var nftAbi = require("../abi/ERC721abi.json");
+var nftAddress = process.env.ADDRESS_NFT;
+
 
 var tokenAbi = require("../abi/ERC20abi.json");
-var tokenAddress = "0x1294e07e5B522307829F3Ca0074db1Fda940CC24"
+var tokenAddress = process.env.ADDRESS_TOKEN;
 
 
 let buyToken = (req, res) => {
+
   var msgsender = req.body.msgsender || "";
   var price = req.body.price || "";
   var tokenId = req.body.tokenId || "";
@@ -26,16 +30,18 @@ let buyToken = (req, res) => {
       return;
     }
 
-    var signRequired = [];
+     var signRequired = [];
 
     await token_CONTRACT.methods
-      .allowance(msgsender, nftaddress)
+      .allowance(msgsender, nftAddress)
       .call((error, allowance) => {
         if (error) {
           res.status(400).json({ error });
           return;
         }
-        if (allowance < price) {
+        if (parseInt(allowance) < parseInt(price)) {
+
+         console.log("here");
           signRequired.push({
             to: tokenAddress,
             from: msgsender,
@@ -43,28 +49,20 @@ let buyToken = (req, res) => {
             gasLimit: web3.utils.toHex(1000000),
             gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
             data: token_CONTRACT.methods
-              .approve(nft_ADDRESS, Number.MAX_SAFE_INTEGER - 1)
+              .approve(nftAddress, price+600)
               .encodeABI(),
           });
         }
       });
 
-    // signRequired.push({
-    //   to: NFTaddress,
-    //   from: msgsender,
-    //   nonce: web3.utils.toHex(parseInt(txCount) + 1),
-    //   gasLimit: web3.utils.toHex(1000000),
-    //   gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
-    //   data: NFT_CONTRACT.methods.buyToken(tokenId).encodeABI(),
-    // });
-
-    nft_CONTRACT.methods.buyToken(tokenId).call((error, result) => {
-        if (error) {
-          res.status(400).json({ error });
-          return;
-        }
-        res.status(200).json({ result });
-      });
+      signRequired.push({
+      to: nftAddress,
+      from: msgsender,
+      nonce: web3.utils.toHex(parseInt(txCount) + 1),
+      gasLimit: web3.utils.toHex(1000000),
+      gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
+      data: nft_CONTRACT.methods.buyToken(tokenId).encodeABI(),
+    });
 
     res.status(200).json({
       signRequired,

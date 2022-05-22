@@ -29,16 +29,13 @@ const Explore = () => {
           tokenId: response.data.result[i],
           price: price.data.result,
         });
-
       } catch (err) {}
     }
 
     setNfts(tokens);
-   
-    
-  },[]);
+  }, []);
 
-  console.log("My NFTs",nfts);
+  console.log(nfts);
   return (
     <>
       <ul
@@ -54,34 +51,31 @@ const Explore = () => {
         </li>
       </ul>
 
-
-      
       <div id="containerStyle">
-        {nfts.map((value,index) => {
+        {nfts.map((value, index) => {
           return (
             <div className="card" key={index}>
               <Link to={`/details/${value.tokenId}`}>
-               <div className="upperSection">
-                <video
-                  src={value.media}
-                  preload="auto|metadata|none"
-                  className="vid"
-                  style={{ width: "268px" }}
-                />
-               </div>
+                <div className="upperSection">
+                  <video
+                    src={value.media}
+                    preload="auto|metadata|none"
+                    className="vid"
+                    style={{ width: "268px" }}
+                  />
+                </div>
                 <div className="lowerSection">
                   <img src="https://picsum.photos/50/50" />
                   <h4>Tenz</h4>
                   <p>
                     Price:{" "}
                     <span style={{ color: "orangered", fontWeight: "bold" }}>
-                      {value.price/Math.pow(10,18)} Tokens
+                      {value.price / Math.pow(10, 18)} Tokens
                     </span>
                   </p>
                 </div>
 
                 <h2> {value.title}</h2>
-
               </Link>
             </div>
           );

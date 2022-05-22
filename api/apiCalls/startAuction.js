@@ -1,5 +1,5 @@
 var Web3 = require("web3");
-const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+const web3 = new Web3(process.env.TESTNET_RPC);
 const auctionAbi = require("../abi/Auctionabi.json");
 
 let startAuction = (req, res) => {
@@ -15,7 +15,7 @@ let startAuction = (req, res) => {
     return;
   }
 
-  const auctionAddress = "0xbB98e0B3DbE79e6Ba74edDa53Fc852400DcBe455";
+  const auctionAddress = process.env.ADDRESS_AUCTION;
   const auctionContract = new web3.eth.Contract(auctionAbi, auctionAddress);
 
   web3.eth.getTransactionCount(tokenOwner, (error, txCount) => {
@@ -31,7 +31,11 @@ let startAuction = (req, res) => {
       gasLimit: web3.utils.toHex(1000000),
       gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
       data: auctionContract.methods
-        .startAuction(endTime, startPrice, tokenId)
+        .startAuction(
+          endTime,
+          (startPrice * Math.pow(10, 18)).toString(),
+          tokenId
+        )
         .encodeABI(),
     };
 

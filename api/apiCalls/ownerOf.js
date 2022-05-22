@@ -1,6 +1,6 @@
 var Web3 = require("Web3");
-const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
-var nftAddress = "0x25873A135EcFaeCdb4Da5ecB87547FEaD67a9DCf";
+const web3 = new Web3(process.env.TESTNET_RPC);
+var nftAddress = process.env.ADDRESS_NFT;
 var nftAbi = require("../abi/ERC721abi.json");
 
 

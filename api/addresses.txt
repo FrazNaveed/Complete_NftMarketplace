@@ -4,4 +4,4 @@ ERC20:   0x22a3977a0d87bF16cBFD8378594c56Cd0119EbA0
 ERC721:  0xda21487Fc597FCF58401Ec5518025753fB3F68f4
 Auction: 0xC4aec605908a8f4Bf35EE5c3AF9E888EA03b5dbB
 
-Contracts are verified on etherscan
+Contracts are verified on bscscan

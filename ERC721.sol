@@ -750,6 +750,9 @@ contract TokensNFT is ERC721URIStorage {
     uint256[] mintedIdsArray;                              
     Counters.Counter private _tokenIdCounter;      
 
+
+    event tokenInfo(address indexed from, address indexed to, uint256 indexed tokenId, uint256 tokenPrice , uint256 timestamp);
+
     constructor(IERC20 tokenAddress)
         ERC721("Tokens NFT", "TKNS")
     {
@@ -766,6 +769,15 @@ contract TokensNFT is ERC721URIStorage {
     modifier onlyAuctionContract{
         require(msg.sender == auctionAddress, "Only Auction Address can do this");
         _;
+    }
+
+    function sdfrgdfgdfg(
+        uint256 _tokenId
+    )
+    public
+    view
+    returns(bool){
+        return onAuction[_tokenId];
     }
 
     function setAuctionAddress(
@@ -894,6 +906,8 @@ contract TokensNFT is ERC721URIStorage {
         collections[oldOwner].pop();
         _transfer(ownerOf(tokenId), msg.sender, tokenId);
         collections[msg.sender].push(tokenId);
+
+        emit tokenInfo(oldOwner, msg.sender, tokenId, prices[tokenId], block.timestamp);
     }
 
     function getCollections(address holder) public view returns (uint256[] memory) {

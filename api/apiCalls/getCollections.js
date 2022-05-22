@@ -4,17 +4,17 @@ var contractAbi = require("../abi/ERC721abi.json");
 var contractAddress = process.env.ADDRESS_NFT;
 const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
-let getTokenURI = (req, res) => {
-  var tokenId = req.query.tokenId || "";
+let getCollections = (req, res) => {
+  var address = req.query.address || "";
 
-  if ([tokenId].includes("")) {
+  if ([address].includes("")) {
     res.status(404).json({
       error: "one of the required fields were left empty",
     });
     return;
   }
 
-  contract.methods.getTokenURI(tokenId).call((error, result) => {
+  contract.methods.getCollections(address).call((error, result) => {
     if (error) {
       res.status(400).json({ error });
       return;
@@ -23,4 +23,4 @@ let getTokenURI = (req, res) => {
   });
 };
 
-module.exports = getTokenURI;
+module.exports = getCollections;

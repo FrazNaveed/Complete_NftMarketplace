@@ -8,15 +8,21 @@ const Collection = () => {
   var tokens = [];
 
   const [nfts, setNfts] = useState([]);
+  const [walletAddress, setWalletAddress] = useState("");
 
   useEffect(async () => {
-    let address = await window.ethereum.selectedAddress;
+    const address = await window.ethereum.request({ method: "eth_accounts" });
+
+    window.ethereum.on("accountsChanged", () => {
+      window.location.reload();
+    });
+    setWalletAddress(address[0].toString());
 
     console.log(address);
     const response = await axios.get(`http://localhost:8080/getCollections`, {
-      params: { address: address },
+      params: { address: walletAddress },
     });
-
+  
     for (var i = 0; i < response.data.result.length; i++) {
       try {
         const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
@@ -37,7 +43,8 @@ const Collection = () => {
 
     setNfts(tokens);
   }, []);
-  
+  console.log(walletAddress);
+  console.log(nfts);
   return (
     <>
       <ul
@@ -49,7 +56,7 @@ const Collection = () => {
       >
         {" "}
         <li>
-          <h1>Explore</h1>
+          <h1>Collections</h1>
         </li>
       </ul>
 

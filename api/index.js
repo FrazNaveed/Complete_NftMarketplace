@@ -1,8 +1,9 @@
+require("dotenv").config();
 var express = require("express");
 var multer = require("multer");
 var cors = require('cors')
 const app = express();
-const port = 3000;
+const port = 8080;
 
 app.use(cors());
 
@@ -35,21 +36,27 @@ const Userupload = multer({ storage: userStorage });
 
 //********* ERC20 Calls *********\\
 app.get("/tokenBalanceOf", require("./apiCalls/tokenBalanceOf"));
+app.get("/getTokens", require("./apiCalls/getTokens"));
 
-//*******  ERC721 Calls *******/
-app.get("/ownerOf", require("./apiCalls/ownerOf"));
-app.get("/getTokenPrice", require("./apiCalls/getTokenPrice"));
-app.post("/buyNFT", require("./apiCalls/buyNFT"));
+//*******  ERC721 Calls *******\\
+
 app.post("/mintNFT", upload.single("media"), require("./apiCalls/mintNFT"));
+app.post("/buyNFT", require("./apiCalls/buyNFT"));
 app.get("/getTokenURI", require("./apiCalls/getTokenURI"));
+app.get("/getTokenPrice", require("./apiCalls/getTokenPrice"));
+app.get("/getNftHistory", require("./apiCalls/getNftHistory"));
+app.get("/getCollections", require("./apiCalls/getCollections"));
+app.get("/ownerOf", require("./apiCalls/ownerOf"));
+
 
 //********* Auction Calls *********\\
 app.post("/startAuction", require("./apiCalls/startAuction"));
+app.post("/stopAuction", require("./apiCalls/stopAuction"));
+app.post("/updateBid", require("./apiCalls/updateBid"));
 app.get("/auctionInfo", require("./apiCalls/auctionInfo"));
-app.post("/updateAuctionPrice", require("./apiCalls/updateAuctionPrice"));
-// app.post("/stopAuction", require("./apiCalls/stopAuction"));
-// app.get("/getAllAuctions", require("./apiCalls/getAllAuctions"));
 
+
+// app.get("/getAllAuctions", require("./apiCalls/getAllAuctions"));
 
 app.listen(port, () => {
     console.log(`Live at http://localhost:${port}`);

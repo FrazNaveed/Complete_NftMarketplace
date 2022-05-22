@@ -1,16 +1,16 @@
 var Web3 = require("web3");
-const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
+const web3 = new Web3(process.env.TESTNET_RPC);
 const auctionAbi = require("../abi/Auctionabi.json");
-const auctionAddress = "0xbB98e0B3DbE79e6Ba74edDa53Fc852400DcBe455";
+const auctionAddress = process.env.ADDRESS_AUCTION;
 const auctionContract = new web3.eth.Contract(auctionAbi, auctionAddress);
 
 const tokenAbi = require("../abi/ERC20abi.json");
 
-const tokenAddress = "0xD1eFE36e9587367b4a6AF81199b863d47943D22c";
+const tokenAddress = process.env.ADDRESS_TOKEN;
 const tokenContract = new web3.eth.Contract(tokenAbi, tokenAddress);
 
 
-let updatePrice = (req, res) => {
+let updateBid = (req, res) => {
   var tokenId = req.body.tokenId || "";
   var newPrice = req.body.newPrice || "";
   var msgsender = req.body.msgsender || "";
@@ -37,7 +37,8 @@ let updatePrice = (req, res) => {
           res.status(400).json({ error });
           return;
         }
-        if (allowance < newPrice) {
+        if (parseInt(allowance) < parseInt(newPrice)) {
+
           signRequired.push({
             to: tokenAddress,
             from: msgsender,
@@ -45,11 +46,22 @@ let updatePrice = (req, res) => {
             gasLimit: web3.utils.toHex(1000000),
             gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
             data: tokenContract.methods
-              .approve(auctionAddress, Number.MAX_SAFE_INTEGER - 1)
+              .approve(auctionAddress,  (newPrice+500*Math.pow(10,18)).toString())
               .encodeABI(),
           });
         }
       });
+
+
+  //  let estimate =   auctionContract.methods.updateBid(tokenId, (newPrice+500*Math.pow(10,18)).toString())
+  //   .estimateGas(
+  //       {
+  //           from: msgsender,
+  //           gasPrice:  web3.utils.toHex(web3.utils.toWei("10", "gwei"))
+  //       }, function(error, estimatedGas) {
+  //         console.log(estimatedGas);
+  //       }
+  //   )
 
     signRequired.push({
       to: auctionAddress,
@@ -57,7 +69,7 @@ let updatePrice = (req, res) => {
       nonce: web3.utils.toHex(txCount),
       gasLimit: web3.utils.toHex(1000000),
       gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
-      data: auctionContract.methods.updatePrice(tokenId, newPrice).encodeABI(),
+      data: auctionContract.methods.updateBid(tokenId, (newPrice+500*Math.pow(10,18)).toString()).encodeABI(),
     });
 
     res.status(200).json({
@@ -67,4 +79,4 @@ let updatePrice = (req, res) => {
   });
 };
 
-module.exports = updatePrice;
+module.exports = updateBid;

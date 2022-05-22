@@ -3,7 +3,12 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "nftToken",
+				"name": "_tokenAddr",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_nftTokenAddr",
 				"type": "address"
 			}
 		],
@@ -33,7 +38,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			}
 		],
@@ -80,7 +85,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			}
 		],
@@ -99,7 +104,7 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "nftToken",
+				"name": "_nftTokenAddr",
 				"type": "address"
 			}
 		],
@@ -111,18 +116,31 @@
 	{
 		"inputs": [
 			{
+				"internalType": "address",
+				"name": "_tokenAddr",
+				"type": "address"
+			}
+		],
+		"name": "setTokenAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
 				"internalType": "uint256",
-				"name": "endTime",
+				"name": "_endTime",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "startPrice",
+				"name": "_startPrice",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			}
 		],
@@ -135,7 +153,7 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			}
 		],
@@ -148,7 +166,7 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "newOwner",
+				"name": "_newOwner",
 				"type": "address"
 			}
 		],
@@ -161,16 +179,16 @@
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "tokenId",
+				"name": "_tokenId",
 				"type": "uint256"
 			},
 			{
 				"internalType": "uint256",
-				"name": "newPrice",
+				"name": "_newPrice",
 				"type": "uint256"
 			}
 		],
-		"name": "updatePrice",
+		"name": "updateBid",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"

@@ -1,9 +1,7 @@
-var Web3 = require("Web3");
-const web3 = new Web3("https://ropsten.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161");
-var contractAddress = "0x25873A135EcFaeCdb4Da5ecB87547FEaD67a9DCf";
+var Web3 = require("web3");
+const web3 = new Web3(process.env.TESTNET_RPC);
 var contractAbi = require("../abi/ERC721abi.json");
-
-
+var contractAddress = process.env.ADDRESS_NFT;
 const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
 var fs = require("fs");
@@ -16,7 +14,6 @@ const pinata = pinataSDK(
 
 
 let mintNFT = (req, res)=>{
-    console.log(req.body);
     var msgsender = req.body.msgsender || "";
     var title = req.body.title || "";
     var price = req.body.price || "";
@@ -116,7 +113,7 @@ let mintNFT = (req, res)=>{
                                         .mint(
                                             to,
                                             metadataHash,
-                                            price
+                                            (price * Math.pow(10,18)).toString()
                                         )
                                         .encodeABI(),
                                 };
