@@ -1,19 +1,15 @@
-import { React, useEffect } from "react";
-import "./explore.css";
+import { React, useState ,useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
+import "./explore.css";
 
 const Explore = () => {
   var tokens = [];
-
-  const [nfts, setNfts] = useState([]);
-
+  var [nfts, setNfts] = useState([]);
+  console.log(nfts);
   useEffect(async () => {
     const response = await axios.get(`http://localhost:8080/getTokens`, {});
-
     response.data.result.reverse();
-
     for (var i = 0; i < response.data.result.length; i++) {
       try {
         const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
@@ -31,11 +27,11 @@ const Explore = () => {
         });
       } catch (err) {}
     }
-
     setNfts(tokens);
-  }, []);
 
-  console.log(nfts);
+  },[]);
+
+
   return (
     <>
       <ul
@@ -75,11 +71,12 @@ const Explore = () => {
                   </p>
                 </div>
 
-                <h2> {value.title}</h2>
+                <h2 className="title"> {value.title}</h2>
               </Link>
             </div>
           );
         })}
+
       </div>
     </>
   );

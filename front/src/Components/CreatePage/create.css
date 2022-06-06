@@ -82,3 +82,36 @@ textarea{
     background-color: #D9381E;
     border: #D9381E;
 }
+
+label{
+    border: 1px solid royalBlue;
+    border-radius: 12px;
+    height: 40px;
+    width: 255px;
+    padding: 5px;
+  }
+  #registerDiv{
+    display: flex;
+    flex-direction: row;
+    justify-content: center; 
+    align-items: center;
+  }
+  
+  .registerButton{
+    position: relative;
+    border: 1px solid royalblue;
+    border-radius: 16px;
+    background: black;
+    background-clip: padding-box;
+    width: 200px;
+    height: 50px;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .registerButton:hover{
+    background-color: orangered;
+    border: 1px solid orangered;
+  }

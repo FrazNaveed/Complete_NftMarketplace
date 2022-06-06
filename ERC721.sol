@@ -752,7 +752,7 @@ contract TokensNFT is ERC721URIStorage {
 
 
     event tokenInfo(address indexed from, address indexed to, uint256 indexed tokenId, uint256 tokenPrice , uint256 timestamp);
-
+    event mintedTokens(uint256 tokenId, uint256 timestamp);
     constructor(IERC20 tokenAddress)
         ERC721("Tokens NFT", "TKNS")
     {
@@ -770,16 +770,6 @@ contract TokensNFT is ERC721URIStorage {
         require(msg.sender == auctionAddress, "Only Auction Address can do this");
         _;
     }
-
-    function sdfrgdfgdfg(
-        uint256 _tokenId
-    )
-    public
-    view
-    returns(bool){
-        return onAuction[_tokenId];
-    }
-
     function setAuctionAddress(
         address _auctionAddress
     )external onlyOwner{
@@ -849,6 +839,8 @@ contract TokensNFT is ERC721URIStorage {
         prices[_tokenIdCounter.current()] = price;
         _tokenIdCounter.increment();
         onAuction[_tokenIdCounter.current()] = false;
+
+        emit mintedTokens(_tokenIdCounter.current(), block.timestamp);
     }
 
     /** @dev

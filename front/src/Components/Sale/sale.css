@@ -1,0 +1,27 @@
+
+
+.containerStyle{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    padding: 80px;
+    
+}
+
+.tokenEndTime {
+    color: orangered;
+    border-radius: 12px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    width: 80%;
+    height: 20px;
+}
+.title{
+    margin: 6px;
+}

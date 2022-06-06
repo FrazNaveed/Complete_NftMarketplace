@@ -178,8 +178,9 @@ const Details = () => {
           params,
         });
 
-        window.location.reload();
+       
       }
+      window.location.reload();
       // setTokenActionMessage(
       //     "Auction stop request sent to network, please wait for transaction to be mined."
       // );
@@ -327,6 +328,7 @@ const Details = () => {
               : tokenData.price / Math.pow(10, 18)}
 
             <span style={{ color: "orangered", marginRight: "15px" }}>
+              {' '}
               Tokens
             </span>
           </p>
@@ -399,8 +401,11 @@ const Details = () => {
                 style={{ width: "255px", marginTop: "25px" }}
               />
               <input
-                type="datetime-local"
+                type="text"
                 onChange={(e) => setAuctionEndDate(e.target.value)}
+                onFocus={(e) => (e.target.type = "date")}
+                onBlur={(e) => (e.target.type = "text")}
+                placeholder="Enter End Date" 
                 min={Date.now()}
                 style={{ width: "255px", marginTop: "5px" }}
               />

@@ -1,0 +1,38 @@
+
+
+
+.transactionsDiv{
+    margin-top: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+}
+
+.findBetweenDates{
+    background-color: rgb(15, 15, 15);
+    border-radius: 12px;
+    height: 100px;
+
+}
+
+.findButton{
+    position: relative;
+    border: 1px solid royalblue;
+    border-radius: 16px;
+    background: black;
+    background-clip: padding-box;
+    width: 150px;
+    height: 40px;
+    color: white;
+    font-size: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    margin: 10px;
+  }
+  
+  .findButton:hover{
+    background-color: orangered;
+    border: 1px solid orangered;
+  }

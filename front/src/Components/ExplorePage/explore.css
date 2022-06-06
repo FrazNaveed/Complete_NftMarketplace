@@ -12,7 +12,6 @@
 
 }
 
-
 .card{
   display: flex;
   width: 270px;
@@ -62,4 +61,7 @@ h3{
 }
 p{
   margin: 4px;
+}
+.title{
+  margin: 6px;
 }

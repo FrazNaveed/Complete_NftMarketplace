@@ -1,8 +1,8 @@
-import { React, useEffect } from "react";
-import "./collection.css";
+import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import axios from "axios";
+import "./collection.css";
+
 
 const Collection = () => {
   var tokens = [];
@@ -11,18 +11,13 @@ const Collection = () => {
   const [walletAddress, setWalletAddress] = useState("");
 
   useEffect(async () => {
-    const address = await window.ethereum.request({ method: "eth_accounts" });
+    const address = localStorage.getItem("Address");
+    setWalletAddress(address);
 
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
-    });
-    setWalletAddress(address[0].toString());
-
-    console.log(address);
     const response = await axios.get(`http://localhost:8080/getCollections`, {
       params: { address: walletAddress },
     });
-  
+
     for (var i = 0; i < response.data.result.length; i++) {
       try {
         const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
@@ -42,24 +37,11 @@ const Collection = () => {
     }
 
     setNfts(tokens);
-  }, []);
-  console.log(walletAddress);
-  console.log(nfts);
+  }, [walletAddress]);
   return (
     <>
-      <ul
-        style={{
-          paddingLeft: "120px",
-          marginTop: "50px",
-          textDecoration: "none",
-        }}
-      >
-        {" "}
-        <li>
-          <h1>Collections</h1>
-        </li>
-      </ul>
 
+      <h1>Collections</h1>
       <div id="containerStyle">
         {nfts.map((value, index) => {
           return (

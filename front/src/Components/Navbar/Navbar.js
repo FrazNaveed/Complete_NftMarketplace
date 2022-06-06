@@ -12,7 +12,6 @@ const Navbar = () => {
   });
 
   const isWalletConnected = async () => {
-
     let address = window.ethereum.selectedAddress;
     localStorage.setItem("walletAddress", address);
 
@@ -29,6 +28,7 @@ const Navbar = () => {
       const accounts = await ethereum.request({
         method: "eth_requestAccounts",
       });
+
       setWalletAddress(accounts[0]);
     } catch (err) {
       console.log(err);
@@ -36,31 +36,32 @@ const Navbar = () => {
   };
 
   useEffect(async () => {
-    const {ethereum} = window;
+    const { ethereum } = window;
     if (!ethereum) {
       alert("Intall Metamask Wallet");
     }
 
-    const address = await window.ethereum.request({ method: 'eth_accounts' });
-     setWalletAddress(address[0]);
+    const address = await window.ethereum.request({ method: "eth_accounts" });
+    setWalletAddress(address[0]);
+    localStorage.setItem("Address", address[0]);
 
-
-    window.ethereum.on("accountsChanged", () => {
-      window.location.reload();
+     window.ethereum.on("accountsChanged", async() => {
+       window.location.reload();
+      const address = await window.ethereum.request({ method: "eth_accounts" });
+      setWalletAddress(address[0]);
+      localStorage.setItem("Address", address[0]);
     });
-
-    
 
     if (walletAddress) {
       const response = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
         params: { address: walletAddress },
       });
-  
-      const balance = response.data.result /Math.pow(10, 18);
+
+      const balance = response.data.result / Math.pow(10, 18);
       setWalletBalance(balance);
     }
-   
   }, [walletAddress]);
+
 
   return (
     <>
@@ -76,13 +77,6 @@ const Navbar = () => {
             </li>
 
             <li>
-              <NavLink to="/popular" activeClassName="active">
-                {" "}
-                Popular{" "}
-              </NavLink>
-            </li>
-
-            <li>
               <NavLink to="/sale" activeClassName="active">
                 {" "}
                 Sale{" "}
@@ -92,7 +86,14 @@ const Navbar = () => {
             <li>
               <NavLink to="/collection" activeClassName="active">
                 {" "}
-                My Collection{" "}
+                My Collections{" "}
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink to="/transactions" activeClassName="active">
+                {" "}
+                Transactions{" "}
               </NavLink>
             </li>
 
@@ -114,9 +115,7 @@ const Navbar = () => {
                   <span>Create</span>
                 </button>
               </NavLink>
-              <button>
-                {walletBalance}{" "}
-              </button>
+              <button>{walletBalance} </button>
             </>
           ) : (
             <button type="button" onClick={connectWalletHandler}>
