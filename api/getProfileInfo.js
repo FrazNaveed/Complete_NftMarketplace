@@ -2,8 +2,6 @@ const User = require("./model/registerModel");
 
 const getProfileInfo =  (req,res) =>{
 
-    console.log(req.query);
-
     const _address = req.query.address || "";
     if ([_address].includes("")) {
         res.status(404).json({
