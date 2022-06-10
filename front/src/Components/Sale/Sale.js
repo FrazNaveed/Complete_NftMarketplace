@@ -2,10 +2,12 @@ import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Countdown from "react-countdown";
+import Spinner from ".././Spinner/Spinner";
 import "./sale.css";
 
 const Sale = () => {
   const [auctionTokens, setAuctionTokens] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   var tokens = [];
 
@@ -18,19 +20,28 @@ const Sale = () => {
   };
 
   useEffect(async () => {
-    const res = await axios.get(`${process.env.REACT_APP_API_URL}/getAllAuctions`);
+    setIsLoading(true);
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getAllAuctions`
+    );
     for (let i = 0; i < res.data.result.length; i++) {
       var auctionInfo = null;
       try {
-        auctionInfo = await axios.get(`${process.env.REACT_APP_API_URL}/auctionInfo`, {
-          params: { tokenId: res.data.result[i] },
-        });
+        auctionInfo = await axios.get(
+          `${process.env.REACT_APP_API_URL}/auctionInfo`,
+          {
+            params: { tokenId: res.data.result[i] },
+          }
+        );
       } catch (_) {
         continue;
       }
-      const uri = await axios.get(`${process.env.REACT_APP_API_URL}/getTokenURI`, {
-        params: { tokenId: res.data.result[i] },
-      });
+      const uri = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getTokenURI`,
+        {
+          params: { tokenId: res.data.result[i] },
+        }
+      );
 
       const owner = await axios.get(
         `${process.env.REACT_APP_API_URL}/ownerOf`,
@@ -43,11 +54,10 @@ const Sale = () => {
         `${process.env.REACT_APP_API_URL}/getProfileInfo`,
         {
           params: {
-            address: (owner.data.result).toLowerCase() ,
+            address: owner.data.result.toLowerCase(),
           },
         }
       );
-
 
       const tokenResponse = await axios.get(uri.data.result);
 
@@ -56,59 +66,64 @@ const Sale = () => {
         Math.floor(Date.now() / 1000);
       if (diff <= 0) continue;
       tokens.push({
-        tokenId:res.data.result[i],
+        tokenId: res.data.result[i],
         ...auctionInfo.data.result,
         ...tokenResponse.data,
-          name: profile.data[0].name,
-          image: profile.data[0].profileImg,
-        tknEndTime: diff*1000,
+        name: profile.data[0].name,
+        image: profile.data[0].profileImg,
+        tknEndTime: diff * 1000,
       });
     }
 
     setAuctionTokens(tokens);
-  },[]);
+    setIsLoading(false);
+  }, []);
 
   return (
     <>
       <h1>On Sale</h1>
 
       <div id="containerStyle">
-        {auctionTokens.map((value, index) => {
-          return (
-            <div className="card" key={index}>
-              <Link to={`/details/${value.tokenId}`}>
-                <div className="upperSection">
-                  <video
-                    src={value.media}
-                    preload="auto|metadata|none"
-                    className="vid"
-                    style={{ width: "268px" }}
-                  />
-                </div>
-                <div className="lowerSection">
-                  <img src="https://picsum.photos/50/50" />
-                  <h4>Tenz</h4>
-                  <p>
-                    Price:{" "}
-                    <span style={{ color: "orangered", fontWeight: "bold" }}>
-                      {value.tknBid / Math.pow(10, 18)} Tokens
-                    </span>
-                  </p>
-                </div>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          auctionTokens.map((value, index) => {
+            return (
+              <div className="card" key={index}>
+                <Link to={`/details/${value.tokenId}`}>
+                  <div className="upperSection">
+                    <video
+                      src={value.media}
+                      preload="auto|metadata|none"
+                      className="vid"
+                      style={{ width: "268px" }}
+                    />
+                  </div>
+                  <div className="lowerSection">
+                    <img src="https://picsum.photos/50/50" />
+                    <h4>Tenz</h4>
+                    <p>
+                      Price:{" "}
+                      <span style={{ color: "orangered", fontWeight: "bold" }}>
+                        {value.tknBid / Math.pow(10, 18)} Tokens
+                      </span>
+                    </p>
+                  </div>
 
-                <h2 className="title"> {value.title}</h2>
+                  <h2 className="title"> {value.title}</h2>
 
-                <div className="tokenEndTime">
-                  <p>
-                    {" "}
-                    <Countdown date={Date.now() + value.tknEndTime} />
-                    <span style={{ color: "white" }}>{' '}Left</span>
-                  </p>
-                </div>
-              </Link>
-            </div>
-          );
-        })}
+                  <div className="tokenEndTime">
+                    <p>
+                      {" "}
+                      <Countdown date={Date.now() + value.tknEndTime} />
+                      <span style={{ color: "white" }}> Left</span>
+                    </p>
+                  </div>
+                </Link>
+              </div>
+            );
+          })
+        )}
       </div>
     </>
   );

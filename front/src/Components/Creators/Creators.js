@@ -1,12 +1,14 @@
 import { React, useEffect, useState } from "react";
 import axios from "axios";
+import Spinner from ".././Spinner/Spinner";
 import "./creators.css";
 
 const Creators = () => {
   var ids = [];
   const [profilesData, setProfileData] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(async () => {
+    setIsLoading(true);
     const res = await axios.get(`${process.env.REACT_APP_API_URL}/getProfile`);
 
     for (let i = 0; i < res.data.length; i++) {
@@ -20,7 +22,7 @@ const Creators = () => {
       });
     }
     setProfileData(ids);
-    console.log(res);
+    setIsLoading(false);
   }, []);
 
   return (
@@ -28,20 +30,24 @@ const Creators = () => {
       <h1>Creators</h1>
 
       <div className=" populateDiv">
-        {profilesData.map((value) => {
-          return (
-            <>
-              <div className="creatorCards">
-                <img src={`${value.image}`} alt="profile image" />
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          profilesData.map((value) => {
+            return (
+              <>
+                <div className="creatorCards">
+                  <img src={`${value.image}`} alt="profile image" />
 
-                <div className="creatorInfo">
-                  <h3>Name: {value.name}</h3>
-                  <h4>Address: {value.address}</h4>
+                  <div className="creatorInfo">
+                    <h3>Name: {value.name}</h3>
+                    <h4>Address: {value.address}</h4>
+                  </div>
                 </div>
-              </div>
-            </>
-          );
-        })}
+              </>
+            );
+          })
+        )}
       </div>
     </div>
   );

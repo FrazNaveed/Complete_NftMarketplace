@@ -1,0 +1,30 @@
+.footer{
+    text-align: center; 
+    display: flex;
+    background-color:black;
+    color: white;
+    /* position: relative; */
+    position: fixed;
+    left:0;
+    bottom:0;
+    right:0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    justify-content: center;
+    height: 50px;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.377);;
+}
+.footer p{
+    margin-left: 10px;
+}
+  .footer-inner{
+      display: flex;
+      width: 250px;
+      justify-content: space-around;
+      align-items: center;
+  }

@@ -1,15 +1,16 @@
 import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Spinner from ".././Spinner/Spinner";
 import "./explore.css";
 
 const Explore = () => {
   var tokens = [];
   var [nfts, setNfts] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(async () => {
-
-
-   
+    setIsLoading(true);
     const response = await axios.get(
       `${process.env.REACT_APP_API_URL}/getTokens`,
       {}
@@ -17,8 +18,6 @@ const Explore = () => {
     response.data.result.reverse();
     for (var i = 0; i < response.data.result.length; i++) {
       try {
-       
-    
         const uri = await axios.get(
           `${process.env.REACT_APP_API_URL}/getTokenURI`,
           {
@@ -33,7 +32,6 @@ const Explore = () => {
           }
         );
 
-        
         const owner = await axios.get(
           `${process.env.REACT_APP_API_URL}/ownerOf`,
           {
@@ -45,7 +43,7 @@ const Explore = () => {
           `${process.env.REACT_APP_API_URL}/getProfileInfo`,
           {
             params: {
-              address: (owner.data.result).toLowerCase() ,
+              address: owner.data.result.toLowerCase(),
             },
           }
         );
@@ -54,14 +52,13 @@ const Explore = () => {
           tokenId: response.data.result[i],
           price: price.data.result,
           name: profile.data[0].name,
-          image: profile.data[0].profileImg
+          image: profile.data[0].profileImg,
         });
       } catch (err) {}
     }
     setNfts(tokens);
-
+    setIsLoading(false);
   }, []);
-
 
   return (
     <>
@@ -79,34 +76,38 @@ const Explore = () => {
       </ul>
 
       <div id="containerStyle">
-        {nfts.map((value, index) => {
-          return (
-            <div className="card" key={index}>
-              <Link to={`/details/${value.tokenId}`}>
-                <div className="upperSection">
-                  <video
-                    src={value.media}
-                    preload="auto|metadata|none"
-                    className="vid"
-                    style={{ width: "268px" }}
-                  />
-                </div>
-                <div className="lowerSection">
-                  <img src={`${value.image}`} />
-                  <h4>{value.name}</h4>
-                  <p>
-                    Price:{" "}
-                    <span style={{ color: "orangered", fontWeight: "bold" }}>
-                      {value.price / Math.pow(10, 18)} Tokens
-                    </span>
-                  </p>
-                </div>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          nfts.map((value, index) => {
+            return (
+              <div className="card" key={index}>
+                <Link to={`/details/${value.tokenId}`}>
+                  <div className="upperSection">
+                    <video
+                      src={value.media}
+                      preload="auto|metadata|none"
+                      className="vid"
+                      style={{ width: "268px" }}
+                    />
+                  </div>
+                  <div className="lowerSection">
+                    <img src={`${value.image}`} />
+                    <h4>{value.name}</h4>
+                    <p>
+                      Price:{" "}
+                      <span style={{ color: "orangered", fontWeight: "bold" }}>
+                        {value.price / Math.pow(10, 18)} Tokens
+                      </span>
+                    </p>
+                  </div>
 
-                <h2 className="title"> {value.title}</h2>
-              </Link>
-            </div>
-          );
-        })}
+                  <h2 className="title"> {value.title}</h2>
+                </Link>
+              </div>
+            );
+          })
+        )}
       </div>
     </>
   );

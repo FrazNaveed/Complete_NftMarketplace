@@ -1,6 +1,7 @@
 import { React, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import Spinner from ".././Spinner/Spinner";
 import "./collection.css";
 
 const Collection = () => {
@@ -8,8 +9,10 @@ const Collection = () => {
 
   const [nfts, setNfts] = useState([]);
   const [walletAddress, setWalletAddress] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(async () => {
+    setIsLoading(true);
     const address = localStorage.getItem("Address");
     setWalletAddress(address);
 
@@ -47,7 +50,7 @@ const Collection = () => {
           `${process.env.REACT_APP_API_URL}/getProfileInfo`,
           {
             params: {
-              address: (owner.data.result).toLowerCase() ,
+              address: owner.data.result.toLowerCase(),
             },
           }
         );
@@ -57,45 +60,49 @@ const Collection = () => {
           tokenId: response.data.result[i],
           price: price.data.result,
           name: profile.data[0].name,
-          image: profile.data[0].profileImg
+          image: profile.data[0].profileImg,
         });
       } catch (err) {}
     }
-
     setNfts(tokens);
+    setIsLoading(false);
   }, [walletAddress]);
   return (
     <>
       <h1>Collections</h1>
       <div id="containerStyle">
-        {nfts.map((value, index) => {
-          return (
-            <div className="card" key={index}>
-              <Link to={`/details/${value.tokenId}`}>
-                <div className="upperSection">
-                  <video
-                    src={value.media}
-                    preload="auto|metadata|none"
-                    className="vid"
-                    style={{ width: "268px" }}
-                  />
-                </div>
-                <div className="lowerSection">
-                  <img src={`${value.image}`} />
-                  <h4>{value.name}</h4>
-                  <p>
-                    Price:{" "}
-                    <span style={{ color: "orangered", fontWeight: "bold" }}>
-                      {value.price / Math.pow(10, 18)} Tokens
-                    </span>
-                  </p>
-                </div>
+        {isLoading ? (
+          <Spinner />
+        ) : (
+          nfts.map((value, index) => {
+            return (
+              <div className="card" key={index}>
+                <Link to={`/details/${value.tokenId}`}>
+                  <div className="upperSection">
+                    <video
+                      src={value.media}
+                      preload="auto|metadata|none"
+                      className="vid"
+                      style={{ width: "268px" }}
+                    />
+                  </div>
+                  <div className="lowerSection">
+                    <img src={`${value.image}`} />
+                    <h4>{value.name}</h4>
+                    <p>
+                      Price:{" "}
+                      <span style={{ color: "orangered", fontWeight: "bold" }}>
+                        {value.price / Math.pow(10, 18)} Tokens
+                      </span>
+                    </p>
+                  </div>
 
-                <h2> {value.title}</h2>
-              </Link>
-            </div>
-          );
-        })}
+                  <h2> {value.title}</h2>
+                </Link>
+              </div>
+            );
+          })
+        )}
       </div>
     </>
   );
