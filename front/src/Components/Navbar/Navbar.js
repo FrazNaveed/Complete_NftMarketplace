@@ -45,23 +45,25 @@ const Navbar = () => {
     setWalletAddress(address[0]);
     localStorage.setItem("Address", address[0]);
 
-     window.ethereum.on("accountsChanged", async() => {
-       window.location.reload();
+    window.ethereum.on("accountsChanged", async () => {
+      window.location.reload();
       const address = await window.ethereum.request({ method: "eth_accounts" });
       setWalletAddress(address[0]);
       localStorage.setItem("Address", address[0]);
     });
 
     if (walletAddress) {
-      const response = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
-        params: { address: walletAddress },
-      });
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_URL}/tokenBalanceOf`,
+        {
+          params: { address: walletAddress },
+        }
+      );
 
       const balance = response.data.result / Math.pow(10, 18);
       setWalletBalance(balance);
     }
   }, [walletAddress]);
-
 
   return (
     <>
@@ -90,12 +92,12 @@ const Navbar = () => {
               </NavLink>
             </li>
 
-            <li>
+            {/* <li>
               <NavLink to="/transactions" activeClassName="active">
                 {" "}
                 Transactions{" "}
               </NavLink>
-            </li>
+            </li> */}
 
             <li>
               <NavLink to="/creators" activeClassName="active">

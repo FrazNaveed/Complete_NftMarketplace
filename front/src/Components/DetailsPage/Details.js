@@ -64,20 +64,29 @@ const Details = () => {
 
   const buyNFT = async () => {
     let address = await window.ethereum.selectedAddress;
-    const balance = await axios.get(`http://localhost:8080/tokenBalanceOf`, {
-      params: { address: address },
-    });
+    const balance = await axios.get(
+      `${process.env.REACT_APP_API_URL}/tokenBalanceOf`,
+      {
+        params: { address: address },
+      }
+    );
 
-    const price = await axios.get(`http://localhost:8080/getTokenPrice`, {
-      params: { tokenId: tokenId },
-    });
+    const price = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getTokenPrice`,
+      {
+        params: { tokenId: tokenId },
+      }
+    );
 
     if (balance >= price) {
-      const response = await axios.post(`http://localhost:8080/buyNFT`, {
-        msgsender: walletAddress,
-        price: tokenData.price,
-        tokenId: tokenId,
-      });
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/buyNFT`,
+        {
+          msgsender: walletAddress,
+          price: tokenData.price,
+          tokenId: tokenId,
+        }
+      );
 
       const tx = response.data.signRequired;
 
@@ -127,12 +136,15 @@ const Details = () => {
       alert("Error: Please enter a valid date in future.");
       return;
     }
-    const response = await axios.post(`http://localhost:8080/startAuction`, {
-      tokenId: tokenId,
-      startPrice: startAuctionPrice,
-      endTime: selectedTimestamp,
-      tokenOwner: walletAddress,
-    });
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_URL}/startAuction`,
+      {
+        tokenId: tokenId,
+        startPrice: startAuctionPrice,
+        endTime: selectedTimestamp,
+        tokenOwner: walletAddress,
+      }
+    );
     if (response.status == 200) {
       // setStartAuctionMessage("Sending transaction to the network...");
       // setStartAuctionMessageState("info");
@@ -158,10 +170,13 @@ const Details = () => {
   };
 
   const stopAuction = async () => {
-    const response = await axios.post(`http://localhost:8080/stopAuction`, {
-      msgsender: walletAddress,
-      tokenId: tokenId,
-    });
+    const response = await axios.post(
+      `${process.env.REACT_APP_API_URL}/stopAuction`,
+      {
+        msgsender: walletAddress,
+        tokenId: tokenId,
+      }
+    );
 
     if (response.status == 200) {
       for (var i = 0; i < response.data.signRequired.length; i++) {
@@ -177,8 +192,6 @@ const Details = () => {
           method: "eth_sendTransaction",
           params,
         });
-
-       
       }
       window.location.reload();
       // setTokenActionMessage(
@@ -194,59 +207,56 @@ const Details = () => {
   let updateBid = async () => {
     // setPriceUpdateMessage("Contacting gateway to craft transaction...");
     // setPriceUpdateMessageState("info");
-    
+
     if (bidprice == "" || bidprice < 0 || bidprice < tokenData.price) {
-        // setPriceUpdateMessage("Error: Please enter a valid price.");
-        // setPriceUpdateMessageState("error");
+      // setPriceUpdateMessage("Error: Please enter a valid price.");
+      // setPriceUpdateMessageState("error");
 
-        alert("Bid price shouldn't be empty, zero or less than previous bid");
+      alert("Bid price shouldn't be empty, zero or less than previous bid");
 
-        return;
+      return;
     }
     const response = await axios.post(
-        `http://localhost:8080/updateBid`,
-        {
-            msgsender: walletAddress,
-            newPrice: bidprice,
-            tokenId: tokenId
-        }
+      `${process.env.REACT_APP_API_URL}/updateBid`,
+      {
+        msgsender: walletAddress,
+        newPrice: bidprice,
+        tokenId: tokenId,
+      }
     );
     const tx = response.data.signRequired;
-      console.log(tx);
+    console.log(tx);
     if (response.status == 200) {
-        // setPriceUpdateMessage("Sending transaction to the network...");
-        // setPriceUpdateMessageState("info");
-        for (let txObj of tx) {
-          var params = [txObj];
+      // setPriceUpdateMessage("Sending transaction to the network...");
+      // setPriceUpdateMessageState("info");
+      for (let txObj of tx) {
+        var params = [txObj];
 
-          const txHash = await window.ethereum.request({
-            method: "eth_sendTransaction",
-            params,
+        const txHash = await window.ethereum.request({
+          method: "eth_sendTransaction",
+          params,
+        });
+
+        let txReceipt = null;
+        while (txReceipt == null) {
+          txReceipt = await window.ethereum.request({
+            method: "eth_getTransactionReceipt",
+            params: [txHash],
           });
-
-          let txReceipt = null;
-          while (txReceipt == null) {
-            txReceipt = await window.ethereum.request({
-              method: "eth_getTransactionReceipt",
-              params: [txHash],
-            });
-          }
         }
+      }
 
-        window.location.reload();
+      window.location.reload();
 
-
-
-
-        // setPriceUpdateMessage(
-        //     "Price update request sent, please wait for transaction to be mined."
-        // );
-        // setPriceUpdateMessageState("success");
+      // setPriceUpdateMessage(
+      //     "Price update request sent, please wait for transaction to be mined."
+      // );
+      // setPriceUpdateMessageState("success");
     } else {
-        // setPriceUpdateMessage(
-        //     "An error occured while crafting transactions, try refreshing the page."
-        // );
-        // setPriceUpdateMessageState("error");
+      // setPriceUpdateMessage(
+      //     "An error occured while crafting transactions, try refreshing the page."
+      // );
+      // setPriceUpdateMessageState("error");
     }
   };
 
@@ -272,24 +282,44 @@ const Details = () => {
     });
     setWalletAddress(address[0]);
 
-    const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
-      params: { tokenId: tokenId },
-    });
-    const price = await axios.get(`http://localhost:8080/getTokenPrice`, {
+    const uri = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getTokenURI`,
+      {
+        params: { tokenId: tokenId },
+      }
+    );
+    const price = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getTokenPrice`,
+      {
+        params: { tokenId: tokenId },
+      }
+    );
+
+
+    const owner = await axios.get(`${process.env.REACT_APP_API_URL}/ownerOf`, {
       params: { tokenId: tokenId },
     });
 
-    const owner = await axios.get(`http://localhost:8080/ownerOf`, {
-      params: { tokenId: tokenId },
-    });
+    const profile = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getProfileInfo`,
+      {
+        params: {
+          address: (owner.data.result).toLowerCase() ,
+        },
+      }
+    );
+
 
     const uriResponse = await axios.get(uri.data.result);
 
     var auctioned = null;
     try {
-      auctioned = await axios.get(`http://localhost:8080/auctionInfo`, {
-        params: { tokenId: tokenId },
-      });
+      auctioned = await axios.get(
+        `${process.env.REACT_APP_API_URL}/auctionInfo`,
+        {
+          params: { tokenId: tokenId },
+        }
+      );
     } catch (err) {}
 
     if (auctioned) {
@@ -298,15 +328,21 @@ const Details = () => {
         ...uriResponse.data,
         price: price.data.result,
         owner: owner.data.result.toLowerCase(),
+        name: profile.data[0].name,
+        image: profile.data[0].profileImg
       });
     } else {
       setTokenData({
         ...uriResponse.data,
         price: price.data.result,
         owner: owner.data.result.toLowerCase(),
+        name: profile.data[0].name,
+        image: profile.data[0].profileImg
       });
     }
   }, [walletAddress]);
+
+  console.log()
 
   return (
     <div className="container">
@@ -316,8 +352,8 @@ const Details = () => {
 
       <div className="nameNdPrice">
         <div className="name">
-          <img src="https://picsum.photos/50/50" />
-          <h2>Tenz</h2>
+          <img src={`${tokenData.image}`} />
+          <h2>{tokenData.name}</h2>
         </div>
 
         <div className="price">
@@ -328,7 +364,7 @@ const Details = () => {
               : tokenData.price / Math.pow(10, 18)}
 
             <span style={{ color: "orangered", marginRight: "15px" }}>
-              {' '}
+              {" "}
               Tokens
             </span>
           </p>
@@ -405,7 +441,7 @@ const Details = () => {
                 onChange={(e) => setAuctionEndDate(e.target.value)}
                 onFocus={(e) => (e.target.type = "date")}
                 onBlur={(e) => (e.target.type = "text")}
-                placeholder="Enter End Date" 
+                placeholder="Enter End Date"
                 min={Date.now()}
                 style={{ width: "255px", marginTop: "5px" }}
               />

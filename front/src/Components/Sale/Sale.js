@@ -18,30 +18,49 @@ const Sale = () => {
   };
 
   useEffect(async () => {
-    const res = await axios.get(`http://localhost:8080/getAllAuctions`);
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/getAllAuctions`);
     for (let i = 0; i < res.data.result.length; i++) {
       var auctionInfo = null;
       try {
-        auctionInfo = await axios.get(`http://localhost:8080/auctionInfo`, {
+        auctionInfo = await axios.get(`${process.env.REACT_APP_API_URL}/auctionInfo`, {
           params: { tokenId: res.data.result[i] },
         });
       } catch (_) {
         continue;
       }
-      const uri = await axios.get(`http://localhost:8080/getTokenURI`, {
+      const uri = await axios.get(`${process.env.REACT_APP_API_URL}/getTokenURI`, {
         params: { tokenId: res.data.result[i] },
       });
+
+      const owner = await axios.get(
+        `${process.env.REACT_APP_API_URL}/ownerOf`,
+        {
+          params: { tokenId: res.data.result[i] },
+        }
+      );
+
+      const profile = await axios.get(
+        `${process.env.REACT_APP_API_URL}/getProfileInfo`,
+        {
+          params: {
+            address: (owner.data.result).toLowerCase() ,
+          },
+        }
+      );
+
+
       const tokenResponse = await axios.get(uri.data.result);
 
       var diff =
         parseInt(auctionInfo.data.result.tknEndTime) -
         Math.floor(Date.now() / 1000);
       if (diff <= 0) continue;
-      // var formattedTime = timeFormatter(diff);
       tokens.push({
         tokenId:res.data.result[i],
         ...auctionInfo.data.result,
         ...tokenResponse.data,
+          name: profile.data[0].name,
+          image: profile.data[0].profileImg,
         tknEndTime: diff*1000,
       });
     }

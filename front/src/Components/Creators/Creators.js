@@ -7,19 +7,21 @@ const Creators = () => {
   const [profilesData, setProfileData] = useState([]);
 
   useEffect(async () => {
-    const res = await axios.get("http://localhost:8080/getProfile");
+    const res = await axios.get(`${process.env.REACT_APP_API_URL}/getProfile`);
 
     for (let i = 0; i < res.data.length; i++) {
       ids.push({
         name: res.data[i].name,
-        address: (res.data[i].address).substr(0,6) +"..."+ (res.data[i].address).substr(37) ,
+        address:
+          res.data[i].address.substr(0, 6) +
+          "..." +
+          res.data[i].address.substr(37),
         image: res.data[i].profileImg,
       });
-    } 
+    }
     setProfileData(ids);
     console.log(res);
-  },[]);
-  
+  }, []);
 
   return (
     <div className="mainDiv">
@@ -30,11 +32,11 @@ const Creators = () => {
           return (
             <>
               <div className="creatorCards">
-                <img src={`${value.image}`} alt="profile image"/>
+                <img src={`${value.image}`} alt="profile image" />
 
                 <div className="creatorInfo">
-                  <h3>Name:{" "}{value.name}</h3>
-                  <h4>Address:{" "}{value.address}</h4>
+                  <h3>Name: {value.name}</h3>
+                  <h4>Address: {value.address}</h4>
                 </div>
               </div>
             </>

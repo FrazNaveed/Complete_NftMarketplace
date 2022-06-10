@@ -17,7 +17,6 @@ function App() {
     <div>
 
     <Navbar/>
-    
     <Routes>
         <Route exact path="/" element={<Explore/>}  />
         <Route exact path="/transactions" element={<Transactions/>}  />

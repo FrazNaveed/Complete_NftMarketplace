@@ -4,7 +4,6 @@ import axios from "axios";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import ImageIcon from "@mui/icons-material/Image";
-// import FileBase64 from "react-file-base64";
 import "./create.css";
 
 const style = {
@@ -40,8 +39,6 @@ const Create = () => {
   const [filePath, setFilePath] = useState("");
   const [base64Img, setbase64Img] = useState("");
   const [profileName, setProfileName] = useState("");
-
-
 
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -142,16 +139,19 @@ const Create = () => {
       image: base64Img,
     });
   };
-  useEffect(async()=>{
-   const res = await axios.get(`http://localhost:8080/getProfileInfo`,{
-      params:{
-        address: localStorage.getItem("Address")
+  useEffect(async () => {
+    const res = await axios.get(
+      `${process.env.REACT_APP_API_URL}/getProfileInfo`,
+      {
+        params: {
+          address: localStorage.getItem("Address"),
+        },
       }
-    }) 
-    if(res.data.length == 0){
+    );
+    if (res.data.length == 0) {
       handleOpen();
     }
-  })
+  });
 
   return (
     <div className="container">
@@ -213,9 +213,6 @@ const Create = () => {
       >
         Open modal
       </button> */}
-
-
-      
 
       <Modal
         open={open}
