@@ -220,7 +220,11 @@ const Details = () => {
       `${process.env.REACT_APP_API_URL}/updateBid`,
       {
         msgsender: walletAddress,
-        newPrice: bidprice,
+        newPrice: bidprice
+        
+        
+        
+        ,
         tokenId: tokenId,
       }
     );

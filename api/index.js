@@ -57,7 +57,7 @@ app.get("/getTokenPrice", require("./apiCalls/ERC721/getTokenPrice"));
 app.get("/getNftHistory", require("./apiCalls/ERC721/getNftHistory"));
 app.get("/getCollections", require("./apiCalls/ERC721/getCollections"));
 app.get("/ownerOf", require("./apiCalls/ERC721/ownerOf"));
-
+app.get("/getHistoricalNFT", require("./apiCalls/ERC721/getHistoricalNFT"));
 
 //********* Auction Calls *********\\
 app.post("/startAuction", require("./apiCalls/Auction/startAuction"));

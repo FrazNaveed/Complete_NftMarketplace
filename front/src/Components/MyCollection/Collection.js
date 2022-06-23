@@ -69,7 +69,10 @@ const Collection = () => {
   }, [walletAddress]);
   return (
     <>
-      <h1>Collections</h1>
+      <div className="collection">
+        <h1>Collections</h1>
+      </div>
+
       <div id="containerStyle">
         {isLoading ? (
           <Spinner />
@@ -97,7 +100,7 @@ const Collection = () => {
                     </p>
                   </div>
 
-                  <h2> {value.title}</h2>
+                  <h2 className="title"> {value.title}</h2>
                 </Link>
               </div>
             );

@@ -16,10 +16,10 @@ let updatePrice = (req, res) => {
     });
     return;
   }
-  const auctionAddress = "0xbB98e0B3DbE79e6Ba74edDa53Fc852400DcBe455"
+  const auctionAddress = process.env.ADDRESS_AUCTION;
   const auctionContract = new web3.eth.Contract(auctionABI, auctionAddress);
 
-  const tokenAddress = "0xD1eFE36e9587367b4a6AF81199b863d47943D22c";
+  const tokenAddress = process.env.ADDRESS_TOKEN;
   const tokenContract = new web3.eth.Contract(tokenABI, tokenAddress);
 
   web3.eth.getTransactionCount(msgsender, async (error, txCount) => {
@@ -56,7 +56,7 @@ let updatePrice = (req, res) => {
         nonce: web3.utils.toHex(txCount),
         gasLimit: web3.utils.toHex(1000000),
         gasPrice: web3.utils.toHex(web3.utils.toWei("10", "gwei")),
-        data: auctionContract.methods.updateBid(tokenId, (newPrice+500*Math.pow(10,18)).toString()).encodeABI(),
+        data: auctionContract.methods.updateBid(tokenId, (newPrice*Math.pow(10,18)).toString()).encodeABI(),
       });
 
     res.status(200).json({

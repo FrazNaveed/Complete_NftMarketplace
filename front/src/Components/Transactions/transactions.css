@@ -36,3 +36,42 @@
     background-color: orangered;
     border: 1px solid orangered;
   }
+
+
+  .historySection {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgb(16,17,22);
+    border-radius: 10px;
+    width: 80%;
+    padding: 3px;
+    margin-bottom: 30px;
+}
+.historySection .headings{
+    display: flex;
+    justify-content: space-around;
+    width: 100%;  
+}
+
+
+.historySection{
+    border: 1px solid rgb(10, 99, 214);
+    width: 85%;
+    padding: 20px;
+    
+}
+.historySection table{
+    border-collapse: collapse;
+    border-radius: 1em;
+    overflow: hidden;
+    width: 100%;
+    text-align: center;  
+}
+.tHeader{
+    font-weight: bolder;
+}
+.tableCell{
+    padding: 8px;
+}

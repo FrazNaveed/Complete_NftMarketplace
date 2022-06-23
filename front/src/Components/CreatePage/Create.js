@@ -202,7 +202,7 @@ const Create = () => {
           </button>
         </form>
 
-        <a href={`${mintMessage}`} />
+        <a>{mintMessage}</a>
         {/* <p>{mintMessageState}</p> */}
       </div>
 

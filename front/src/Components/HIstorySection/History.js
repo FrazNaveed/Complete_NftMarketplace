@@ -15,7 +15,7 @@ const History = () => {
       `${process.env.REACT_APP_API_URL}/getNftHistory`,
       {}
     );
-
+    console.log(response)
     for (var i = 0; i < response.data.result.length; i++) {
       if (response.data.result[i].returnValues.tokenId == tokenId.toString()) {
         let timestamp = response.data.result[i].returnValues.timestamp;

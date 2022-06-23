@@ -68,7 +68,7 @@ const Navbar = () => {
   return (
     <>
       <div className="navbar">
-        <p className="heading">NFT Marketplace</p>
+        <p className="marketplaceTitle">NFT Marketplace</p>
         <nav>
           <ul className="items">
             <li>
@@ -92,12 +92,12 @@ const Navbar = () => {
               </NavLink>
             </li>
 
-            {/* <li>
+            <li>
               <NavLink to="/transactions" activeClassName="active">
                 {" "}
                 Transactions{" "}
               </NavLink>
-            </li> */}
+            </li>
 
             <li>
               <NavLink to="/creators" activeClassName="active">

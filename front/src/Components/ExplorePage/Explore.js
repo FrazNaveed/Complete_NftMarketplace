@@ -62,18 +62,9 @@ const Explore = () => {
 
   return (
     <>
-      <ul
-        style={{
-          paddingLeft: "120px",
-          marginTop: "50px",
-          textDecoration: "none",
-        }}
-      >
-        {" "}
-        <li>
-          <h1>Explore</h1>
-        </li>
-      </ul>
+      <div className="explore">
+        <h1>Explore</h1>
+      </div>
 
       <div id="containerStyle">
         {isLoading ? (

@@ -27,7 +27,9 @@ const Creators = () => {
 
   return (
     <div className="mainDiv">
-      <h1>Creators</h1>
+      <div className="heading">
+        <h1>Creators</h1>
+      </div>
 
       <div className=" populateDiv">
         {isLoading ? (

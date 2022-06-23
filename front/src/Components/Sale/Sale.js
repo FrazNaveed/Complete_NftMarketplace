@@ -24,6 +24,8 @@ const Sale = () => {
     const res = await axios.get(
       `${process.env.REACT_APP_API_URL}/getAllAuctions`
     );
+    console.log(res.data.result);
+
     for (let i = 0; i < res.data.result.length; i++) {
       var auctionInfo = null;
       try {
@@ -49,6 +51,8 @@ const Sale = () => {
           params: { tokenId: res.data.result[i] },
         }
       );
+
+      console.log(owner);
 
       const profile = await axios.get(
         `${process.env.REACT_APP_API_URL}/getProfileInfo`,
@@ -81,7 +85,9 @@ const Sale = () => {
 
   return (
     <>
-      <h1>On Sale</h1>
+      <div className="heading">
+        <h1>On Sale</h1>
+      </div>
 
       <div id="containerStyle">
         {isLoading ? (

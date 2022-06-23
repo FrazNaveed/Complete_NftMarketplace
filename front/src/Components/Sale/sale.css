@@ -24,4 +24,9 @@
 }
 .title{
     margin: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.377);
 }
+.heading{
+    margin-left: 150px;
+    margin-top: 40px;
+  }
